@@ -2,6 +2,8 @@
 
 const rp = require('request-promise');
 const CARTO_SQL = require('../constants').CARTO_SQL;
+const fs = require('fs');
+const { constants : fsConstants } = require('fs');
 
 function normalizeSiteStatus(string) {
   if (string && string !== undefined) {
@@ -39,8 +41,23 @@ function runQuery(q, options = {}) {
   });
 }
 
+function saveFileSync(path, data){
+  let list = path.split(/[\\\/]/);
+  let filename = list.pop();
+  let filepath = list.join('/'); 
+  try {
+    fs.accessSync(filepath, fsConstants.R_OK | fsConstants.W_OK);  
+  } catch (error) {
+    fs.mkdirSync(filepath, { recursive: true }, (err) => {
+      if (err) throw err;
+    });  
+  }
+  fs.writeFileSync(path, data);
+}
+
 module.exports = {
   normalizeSiteStatus,
   mergeNames,
-  runQuery
+  runQuery,
+  saveFileSync
 };

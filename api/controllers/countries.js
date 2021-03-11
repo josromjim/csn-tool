@@ -1,76 +1,101 @@
-const normalizeSiteStatus = require('../helpers/index').normalizeSiteStatus;
-const { runQuery } = require('../helpers');
+const normalizeSiteStatus = require("../helpers/index").normalizeSiteStatus;
+const { runQuery, saveFileSync } = require("../helpers");
+const fs = require("fs");
 
 function getCountries(req, res) {
-  const query = 'SELECT * FROM countries';
-  runQuery(query)
-    .then((data) => {
-      const result = JSON.parse(data).rows || [];
-      res.json(result);
-    })
-    .catch((err) => {
-      res.status(err.statusCode || 500);
-      res.json({ error: err.message });
-    });
+  const filePath = "public/json/countries.json";
+  try {
+    const data = fs.readFileSync(filePath);
+    res.json(JSON.parse(data));
+  } catch (err) {
+    const query = "SELECT * FROM countries";
+    runQuery(query)
+      .then((data) => {
+        const result = JSON.parse(data).rows || [];
+        const jsonData = JSON.stringify(result);
+        saveFileSync(filePath, jsonData);
+        res.json(result);
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
+      });
+  }
 }
 
 function getCountryDetails(req, res) {
-  const query = `SELECT * FROM countries WHERE iso3='${req.params.iso}'`;
-  runQuery(query)
-    .then((data) => {
-      const result = JSON.parse(data);
-      if (result.rows && result.rows.length > 0) {
-        res.json(result.rows[0]);
-      } else {
-        res.status(404);
-        res.json({ error: 'No country found' });
-      }
-    })
-    .catch((err) => {
-      res.status(err.statusCode || 500);
-      res.json({ error: err.message });
-    });
+  const filePath = `public/json/countries/${req.params.iso}.json`;
+  try {
+    const data = fs.readFileSync(filePath);
+    res.json(JSON.parse(data));
+  } catch (err) {
+    const query = `SELECT * FROM countries WHERE iso3='${req.params.iso}'`;
+    runQuery(query)
+      .then((data) => {
+        const result = JSON.parse(data);
+        if (result.rows && result.rows.length > 0) {
+          res.json(result.rows[0]);
+          const jsonData = JSON.stringify(result.rows[0]);
+          saveFileSync(filePath, jsonData);
+        } else {
+          res.status(404);
+          res.json({ error: "No country found" });
+        }
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
+      });
+  }
 }
 
 function getCountrySites(req, res) {
-  const query = `with stc as (select site_id,
+  const filePath = `public/json/countries/cities/${req.params.iso}.json`;
+  try {
+    const data = fs.readFileSync(filePath);
+    res.json(JSON.parse(data));
+  } catch (err) {
+    const query = `with stc as (select site_id,
       SUM(case when iba_criteria = '' then 0 else 1 end) as iba
         from species_sites_iba group by site_id)
-    SELECT
-      c.country,
-      c.iso3,
-      coalesce(s.protection_status, 'Unknown') AS protected,
-      s.site_name,
-      s.lat,
-      s.lon,
-      s.site_id as id,
-      s.site_id as site_id,
-      stc.iba AS iba_species,
-      s.hyperlink,
-      s.iba_in_danger
-    FROM sites_iba s
-  	INNER JOIN countries c ON s.country_id = c.country_id AND
-    c.iso3 = '${req.params.iso}'
-    LEFT JOIN stc ON stc.site_id = s.site_id
-    ORDER BY s.site_name`;
-  runQuery(query)
-    .then((data) => {
-      const results = JSON.parse(data).rows || [];
-      if (results && results.length > 0) {
-        results.map((item) => {
-          const row = item;
-          row.lat = +item.lat.toFixed(3);
-          row.lon = +item.lon.toFixed(3);
-          row.protected_slug = normalizeSiteStatus(item.protected);
-          return row;
-        });
-      }
-      res.json(results);
-    })
-    .catch((err) => {
-      res.status(err.statusCode || 500);
-      res.json({ error: err.message });
-    });
+      SELECT
+        c.country,
+        c.iso3,
+        coalesce(s.protection_status, 'Unknown') AS protected,
+        s.site_name,
+        s.lat,
+        s.lon,
+        s.site_id as id,
+        s.site_id as site_id,
+        stc.iba AS iba_species,
+        s.hyperlink,
+        s.iba_in_danger
+      FROM sites_iba s
+      INNER JOIN countries c ON s.country_id = c.country_id AND
+      c.iso3 = '${req.params.iso}'
+      LEFT JOIN stc ON stc.site_id = s.site_id
+      ORDER BY s.site_name`;
+    runQuery(query)
+      .then((data) => {
+        const results = JSON.parse(data).rows || [];
+        if (results && results.length > 0) {
+          results.map((item) => {
+            const row = item;
+            row.lat = +item.lat.toFixed(3);
+            row.lon = +item.lon.toFixed(3);
+            row.protected_slug = normalizeSiteStatus(item.protected);
+            return row;
+          });
+        }
+        res.json(results);
+        const jsonData = JSON.stringify(result);
+        saveFileSync(filePath, jsonData);
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
+      });
+  }
 }
 
 function getCountryCriticalSites(req, res) {
@@ -397,7 +422,7 @@ function getTriggerSpeciesSuitability(req, res) {
         res.json(results);
       } else {
         res.status(404);
-        res.json({ error: 'No species suitability information' });
+        res.json({ error: "No species suitability information" });
       }
     })
     .catch((err) => {
@@ -416,5 +441,5 @@ module.exports = {
   getCountryPopsWithLookAlikeCounts,
   getCountryLookAlikeSpecies,
   getTriggerSpeciesSuitability,
-  getCountryWithLookAlikeCounts
+  getCountryWithLookAlikeCounts,
 };
