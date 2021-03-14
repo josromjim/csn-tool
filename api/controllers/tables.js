@@ -92,9 +92,9 @@ const importFromJs = async (req, res) => {
   const dataKey = trKeys.sort((a, b) =>
     Object.keys(
       translations[a]).length < Object.keys(translations[b]).length
-        ? 1
-        : -1
-    )[0];
+      ? 1
+      : -1
+  )[0];
   const singleData = translations[dataKey];
   const dataWords = Object.keys(singleData).map((item) => {
     const words = trKeys.map((lang) => translations[lang][item]);
