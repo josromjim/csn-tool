@@ -10,22 +10,21 @@ async function getTheData(auth) {
   const gsapi = google.sheets({ version: 'v4', auth });
   const opt1 = {
     spreadsheetId: tableId,
-    range: 'locales!A1:Z',
+    range: 'locales!A1:Z'
   };
 
   const data = await gsapi.spreadsheets.values.get(opt1);
   const rows = data.data.values;
   const langs = [];
-  const translations = {};
+  const resTranslations = {};
   if (rows.length) {
     rows.map((row, key) => {
       row.map((cell, kCell) => {
         if (kCell > 0) {
           if (key === 0) langs.push(cell);
           else {
-            if (!translations[langs[kCell - 1]])
-              translations[langs[kCell - 1]] = {};
-            translations[langs[kCell - 1]][row[0]] = cell;
+            if (!resTranslations[langs[kCell - 1]]) resTranslations[langs[kCell - 1]] = {};
+            resTranslations[langs[kCell - 1]][row[0]] = cell;
           }
         }
       });
@@ -36,15 +35,13 @@ async function getTheData(auth) {
       {
         encoding: 'utf8',
         mode: 0o777,
-        flag: 'w+',
+        flag: 'w+'
       },
       (err) => {
         if (err) throw err;
       }
     );
     return translations;
-  } else {
-    throw new Error('No data found.');
   }
 }
 
@@ -57,7 +54,7 @@ async function setTheData(auth, data, range) {
     spreadsheetId: tableId,
     range: range,
     valueInputOption: 'RAW',
-    resource,
+    resource
   };
   const res = await gsapi.spreadsheets.values.update(opt1);
   return res;
