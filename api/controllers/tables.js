@@ -59,7 +59,7 @@ async function setTheData(auth, data, range) {
   const res = await gsapi.spreadsheets.values.update(opt1);
   return res;
 }
-
+/*
 const getLengths = (translations) => {
   return Object.keys(translations).map((a) => {
     const r = {};
@@ -67,6 +67,7 @@ const getLengths = (translations) => {
     return r;
   });
 };
+*/
 
 const importFromSheet = async (req, res) => {
   try {
