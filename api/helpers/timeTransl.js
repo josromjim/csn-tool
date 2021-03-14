@@ -1,5 +1,6 @@
 module.exports = {};
-/*{
+/*
+module.exports = {
   en: {
     country: 'Country',
     countries: 'Countries',
@@ -701,4 +702,5 @@ module.exports = {};
     season_ev: 'Эволюция сезонной модели',
     legendsTitle: 'Легенда'
   }
-};*/
+};
+*/

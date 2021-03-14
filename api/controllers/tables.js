@@ -90,10 +90,11 @@ const importFromSheet = async (req, res) => {
 const importFromJs = async (req, res) => {
   const trKeys = Object.keys(translations);
   const dataKey = trKeys.sort((a, b) =>
-    Object.keys(translations[a]).length < Object.keys(translations[b]).length
-      ? 1
-      : -1
-  )[0];
+    Object.keys(
+      translations[a]).length < Object.keys(translations[b]).length
+        ? 1
+        : -1
+    )[0];
   const singleData = translations[dataKey];
   const dataWords = Object.keys(singleData).map((item) => {
     const words = trKeys.map((lang) => translations[lang][item]);
@@ -110,7 +111,7 @@ const importFromJs = async (req, res) => {
     );
 
     await client.authorize();
-    let resData = await setTheData(client, data, range);
+    const resData = await setTheData(client, data, range);
     res.json(resData);
   } catch (err) {
     res.status(err.statusCode || 500);
