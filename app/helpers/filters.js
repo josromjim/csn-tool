@@ -13,7 +13,7 @@ export function filterByColumns(data, activeFilters) {
 
   return filteredData;
 }
-
+ 
 export function matchSearch(searchFilter, value) {
   if (!searchFilter || !value) return false;
   return new RegExp(searchFilter, 'gi').test(value.toString());
@@ -37,7 +37,7 @@ export function filterBySearch(data, searchFilter, columns) {
   }, []);
 }
 
-export function filterData({ data, columns, filter, columnFilter } = {}) {
+export function filterData({ data, columns, filter, columnFilter, pagination=false } = {}) {
   if (!data) return false;
 
   const searchFilter = (typeof filter === 'string') && filter.toLowerCase();
