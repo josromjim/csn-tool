@@ -90,9 +90,9 @@ const importFromSheet = async (req, res) => {
 const importFromJs = async (req, res) => {
   const trKeys = Object.keys(translations);
   const dataKey = trKeys.sort((a, b) => (Object.keys(
-   translations[a]).length < Object.keys(translations[b]).length
-   ? 1
-   : -1
+    translations[a]).length < Object.keys(translations[b]).length
+    ? 1
+    : -1
   )[0]);
   const singleData = translations[dataKey];
   const dataWords = Object.keys(singleData).map((item) => {
