@@ -5,7 +5,7 @@ const translations = require('../helpers/timeTransl');
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const tableId = process.env.GOOGLE_TABLE_ID;
-
+/* eslint-disable */
 async function getTheData(auth) {
   const gsapi = google.sheets({ version: 'v4', auth });
   const opt1 = {
@@ -44,15 +44,15 @@ async function getTheData(auth) {
     return translations;
   }
 }
-
+/* eslint-enable */
 async function setTheData(auth, data, range) {
   const gsapi = google.sheets({ version: 'v4', auth });
   const resource = {
-    values: data,
+    values: data
   };
   const opt1 = {
     spreadsheetId: tableId,
-    range: range,
+    range,
     valueInputOption: 'RAW',
     resource
   };
@@ -78,7 +78,6 @@ const importFromSheet = async (req, res) => {
       SCOPES
     );
 
-    let resData;
     await client.authorize();
     const data = await getTheData(client);
     res.json(data);
@@ -122,5 +121,5 @@ const importFromJs = async (req, res) => {
 
 module.exports = {
   importFromJs,
-  importFromSheet,
+  importFromSheet
 };
