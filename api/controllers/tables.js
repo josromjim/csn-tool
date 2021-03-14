@@ -109,9 +109,8 @@ const importFromJs = async (req, res) => {
       SCOPES
     );
 
-    let resData;
     await client.authorize();
-    resData = await setTheData(client, data, range);
+    let resData = await setTheData(client, data, range);
     res.json(resData);
   } catch (err) {
     res.status(err.statusCode || 500);
