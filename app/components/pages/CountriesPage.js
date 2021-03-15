@@ -7,7 +7,6 @@ import { StickyContainer } from 'react-sticky';
 import CountriesSearch from 'containers/countries/CountriesSearch';
  
 class CountriesPage extends React.Component {
-
   componentWillMount() {
     this.getData(this.props);
   }
@@ -17,11 +16,19 @@ class CountriesPage extends React.Component {
       this.getData(newProps);
     }
   }
+  componentDidUpdate(prevProps){
+    if (prevProps.searchFilter !== this.props.searchFilter) {
+      this.getData(this.props);
+    }
+  }
 
   getData(props) {
     if (props.country) {
       if (!props.countryStats) props.getCountryStats(props.country);
-      if (!props.countryData) props.getCountryData(props.country, props.category, props.selectedPopulationId);
+      if (!props.countryData) props.getCountryData(props.country, props.searchFilter, props.category, props.selectedPopulationId);
+    }
+    if (props.searchFilter || props.searchFilter === ''){
+      props.getCountryData(props.country, props.searchFilter, props.category, props.selectedPopulationId);
     }
     if (!props.countryData) props.getCountriesList();
   }
@@ -102,5 +109,5 @@ CountriesPage.propTypes = {
   lang: PropTypes.string,
   getCountryLookAlikeSpecies: PropTypes.func
 };
-
+ 
 export default CountriesPage;

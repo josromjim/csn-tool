@@ -15,13 +15,14 @@ import {
   getCountriesList
 } from 'actions/countries';
 
-function getCountryData(countries) {
+function getCountryData(countries, searchFilter) {
   const id = countries.selectedLASpeciesPopulation || countries.selected;
   return get(countries, `${countries.selectedCategory}.${id}`, false);
 }
 
 const mapStateToProps = (state) => ({
   country: state.countries.selected,
+  searchFilter: state.countries.searchFilter,
   category: state.countries.selectedCategory,
   selectedPopulationId: state.countries.selectedLASpeciesPopulation,
   countries: state.countries.countries,
@@ -33,7 +34,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   getCountryStats: (iso) => dispatch(getCountryStats(iso)),
   getCountriesList: () => dispatch(getCountriesList()),
-  getCountryData: (country, category, populationId) => {
+  getCountryData: (country, filter, category, populationId) => {
     switch (category) {
       case 'species':
         dispatch(getCountrySpecies(country));
@@ -45,11 +46,11 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(getCountryCriticalSites(country));
         break;
       case 'lookAlikeSpecies':
-        dispatch(getCountryLookAlikeSpecies(country));
-        dispatch(getCountryLookAlikeSpeciesCount(country));
+        dispatch(getCountryLookAlikeSpecies(country, filter));
+        dispatch(getCountryLookAlikeSpeciesCount(country, filter));
         break;
       case 'lookAlikeSpeciesPopulation':
-        dispatch(getCountryLookAlikeSpecies(country));
+        dispatch(getCountryLookAlikeSpecies(country, filter));
         dispatch(getCountryLookAlikeSpeciesPopulation(country, populationId));
         break;
       case 'triggerSuitability':

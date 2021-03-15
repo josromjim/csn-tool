@@ -3,10 +3,12 @@ require('dotenv').config({ silent: true });
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
+const compression = require('compression');
 
 const rootPath = path.join(process.cwd());
 
 const app = express();
+app.use(compression());
 const APIRoutes = require('../api/routes');
 
 // parse application/x-www-form-urlencoded

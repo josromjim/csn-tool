@@ -26,6 +26,7 @@ const mapStateToProps = (state) => {
 
   return {
     country: countries.selected,
+    searchFilter: countries.searchFilter,
     category: countries.selectedCategory,
     data: filterData({ data, columns, filter: countries.searchFilter, columnFilter: countries.columnFilter }),
     columns,
