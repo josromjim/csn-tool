@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { runQuery, saveFileSync } = require('../helpers');
+const { runQuery, saveFileSync, getQueryString } = require('../helpers');
 
 function getSpeciesByPosition(req, res) {
   // TO include the geom

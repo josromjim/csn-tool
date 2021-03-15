@@ -5,12 +5,12 @@ const CARTO_SQL = require('../constants').CARTO_SQL;
 const fs = require('fs');
 
 function getQueryString(query) {
-  const strQuery = query 
-    && Object.keys(query).length > 0 
-      ? encodeURIComponent(
-        `?${Object.keys(query)
-          .map(item => `${item}%3D${query[item]}`)
-          .join('&')}`)
+  const strQuery = query
+    && Object.keys(query).length > 0
+    ? encodeURIComponent(
+      `?${Object.keys(query)
+        .map(item => `${item}%3D${query[item]}`)
+        .join('&')}`)
     : '';
   return strQuery;
 }
