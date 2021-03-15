@@ -185,9 +185,10 @@ export function getCountryPopulations(iso) {
   };
 }
 
-export function getCountryLookAlikeSpecies(iso, params = { offset: 0, limit: 10 }) {
+export function getCountryLookAlikeSpecies(iso, filter, params = { offset: 0, limit: 10 }) {
   let paramrow = '';
   if (params) paramrow = Object.keys(params).map(p => `${p}=${params[p]}`).join('&');
+  if (filter && filter.length > 0) paramrow += `&filter=${filter}`;
   const url = `${config.apiHost}/countries/${iso}/look-alike-species${paramrow !== '' ? `?${paramrow}` : ''}`;
   return (dispatch, getState) => {
     const category = getState().countries.selectedCategory;
@@ -212,8 +213,9 @@ export function getCountryLookAlikeSpecies(iso, params = { offset: 0, limit: 10 
   };
 }
 
-export function getCountryLookAlikeSpeciesCount(iso) {
-  const url = `${config.apiHost}/countries/${iso}/look-alike-species-allcount`;
+export function getCountryLookAlikeSpeciesCount(iso, filter='',) {
+  let url = `${config.apiHost}/countries/${iso}/look-alike-species-allcount`;
+  if (filter && filter.length > 0) url += `?filter=${filter}`;
   return (dispatch, getState) => {
     const category = getState().countries.selectedCategory;
     try {
@@ -317,7 +319,7 @@ export function setSearchFilter(search) {
     payload: search
   };
 }
-
+ 
 export function setCountriesTableSort(sort) {
   return {
     type: `${SET_SORT}_${TABLES.COUNTRIES}`,

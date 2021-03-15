@@ -25,7 +25,6 @@ module.exports = function (app) {
       modules: false
     }
   });
-
   app.use(middleware);
   app.get('*', (req, res) => {
     res.write(middleware.fileSystem.readFileSync(indexPath));

@@ -70,12 +70,17 @@ class CountriesTable extends React.Component {
 
   handlePageChange(pageNumber) {
     const pageSize = RESULTS_PER_TABLE_PAGE;
-    const { getCountryLookAlikeSpecies, country } = this.props;
+    const { getCountryLookAlikeSpecies, country, searchFilter } = this.props;
     const offset = (pageNumber - 1) * pageSize + 1;
-    getCountryLookAlikeSpecies(country, {
-      offset,
-      limit: pageSize
-    });
+    console.log('111');
+    getCountryLookAlikeSpecies(
+      country,
+      searchFilter,
+      {
+        offset,
+        limit: pageSize
+      }
+    );
     this.setState({ activePage: pageNumber });
   }
 
@@ -148,6 +153,7 @@ CountriesTable.contextTypes = {
 };
 
 CountriesTable.propTypes = {
+  searchFilter: PropTypes.string,
   allColumns: PropTypes.array.isRequired,
   country: PropTypes.string.isRequired,
   category: PropTypes.string.isRequired,
