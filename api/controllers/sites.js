@@ -1,19 +1,22 @@
-const fs = require("fs");
-const { runQuery, saveFileSync } = require('../helpers');
+const fs = require('fs');
+const { runQuery, saveFileSync, getQueryString } = require('../helpers');
 
 const RESULTS_PER_PAGE = 200;
 
 function getSites(req, res) {
+  const queryStr = getQueryString(req.query);
   const table = req.query.filter === 'iba' ? 'sites_iba' : 'sites_critical';
   const results = req.query.results || RESULTS_PER_PAGE;
   const search = req.query.search
-    ? `${req.query.filter === 'iba' ? 'AND' : 'WHERE'} UPPER(s.country) like UPPER('%${req.query.search}%')
+    ? `${
+      req.query.filter === 'iba' ? 'AND' : 'WHERE'
+    } UPPER(s.country) like UPPER('%${req.query.search}%')
       OR UPPER(s.site_name) like UPPER('%${req.query.search}%')
       OR UPPER(s.protection_status) like UPPER('%${req.query.search}%')
       OR UPPER(s.csn) like UPPER('%${req.query.search}%')
       OR UPPER(s.iba) like UPPER('%${req.query.search}%')`
     : '';
-  let filePath = `public/json/cites-${table}-${search}.json`;
+  const filePath = `public/json/cites-${table}-${search}${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -76,7 +79,7 @@ function getSites(req, res) {
     })
       .then((data) => {
         const result = JSON.parse(data).rows || [];
-        result.map(item => {
+        result.map((item) => {
           const row = item;
           row.lat = +item.lat.toFixed(3);
           row.lon = +item.lon.toFixed(3);
@@ -94,7 +97,8 @@ function getSites(req, res) {
 }
 
 function getSitesDetails(req, res) {
-  let filePath = `public/json/cites/${req.params.type}/${req.params.id}/index.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/cites/${req.params.type}/${req.params.id}/index${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -135,44 +139,47 @@ function getSitesDetails(req, res) {
       GROUP BY s.site_id, s.protected, iso3, lat, lon, s.site_name_clean`;
     }
     runQuery(query)
-    .then((data) => {
-      const results = JSON.parse(data).rows || [];
+      .then((data) => {
+        const results = JSON.parse(data).rows || [];
 
-      if (results && results.length > 0) {
-        const row = results[0];
-        const result = {
-          site: [{
-            name: row.site_name,
-            id: row.id,
-            country: row.country,
-            protected: row.protected,
-            lat: +row.lat.toFixed(3),
-            lon: +row.lon.toFixed(3),
-            hyperlink: row.hyperlink,
-            csn: row.csn,
-            iba: row.iba,
-            iba_in_danger: row.iba_in_danger,
-            qualifying_species: row.qualifying_species,
-            type: row.type
-          }]
-        };
-        const jsonData = JSON.stringify(result);
-        saveFileSync(filePath, jsonData);
-        res.json(result);
-      } else {
-        res.status(404);
-        res.json({ error: 'Site Not Found' });
-      }
-    })
-    .catch((err) => {
-      res.status(err.statusCode || 500);
-      res.json({ error: err.message });
-    });
+        if (results && results.length > 0) {
+          const row = results[0];
+          const result = {
+            site: [
+              {
+                name: row.site_name,
+                id: row.id,
+                country: row.country,
+                protected: row.protected,
+                lat: +row.lat.toFixed(3),
+                lon: +row.lon.toFixed(3),
+                hyperlink: row.hyperlink,
+                csn: row.csn,
+                iba: row.iba,
+                iba_in_danger: row.iba_in_danger,
+                qualifying_species: row.qualifying_species,
+                type: row.type
+              }
+            ]
+          };
+          const jsonData = JSON.stringify(result);
+          saveFileSync(filePath, jsonData);
+          res.json(result);
+        } else {
+          res.status(404);
+          res.json({ error: 'Site Not Found' });
+        }
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
+      });
   }
 }
 
 function getSitesLocations(req, res) {
-  let filePath = `public/json/cites/locations/${req.params.type}/index.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/cites/locations/${req.params.type}/index${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -186,27 +193,28 @@ function getSitesLocations(req, res) {
         'iba' AS site_type FROM sites_iba s`;
     }
     runQuery(query)
-    .then((data) => {
-      const results = JSON.parse(data).rows || [];
-      results.map(item => {
-        const row = item;
-        row.lat = +item.lat.toFixed(3);
-        row.lon = +item.lon.toFixed(3);
-        return row;
+      .then((data) => {
+        const results = JSON.parse(data).rows || [];
+        results.map((item) => {
+          const row = item;
+          row.lat = +item.lat.toFixed(3);
+          row.lon = +item.lon.toFixed(3);
+          return row;
+        });
+        const jsonData = JSON.stringify(results);
+        saveFileSync(filePath, jsonData);
+        res.json(results);
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
       });
-      const jsonData = JSON.stringify(results);
-      saveFileSync(filePath, jsonData);
-      res.json(results);
-    })
-    .catch((err) => {
-      res.status(err.statusCode || 500);
-      res.json({ error: err.message });
-    });
   }
 }
 
 function getSitesSpecies(req, res) {
-  const filePath = `public/json/cites/${req.params.type}/${req.params.id}/species.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/cites/${req.params.type}/${req.params.id}/species${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -269,27 +277,28 @@ function getSitesSpecies(req, res) {
       ORDER BY s.taxonomic_sequence`;
     }
     runQuery(query)
-    .then((data) => {
-      const results = JSON.parse(data).rows || [];
-      results.map(item => {
-        const row = item;
-        row.lat = +item.lat.toFixed(3);
-        row.lon = +item.lon.toFixed(3);
-        return row;
+      .then((data) => {
+        const results = JSON.parse(data).rows || [];
+        results.map((item) => {
+          const row = item;
+          row.lat = +item.lat.toFixed(3);
+          row.lon = +item.lon.toFixed(3);
+          return row;
+        });
+        const jsonData = JSON.stringify(results);
+        saveFileSync(filePath, jsonData);
+        res.json(results);
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
       });
-      const jsonData = JSON.stringify(results);
-      saveFileSync(filePath, jsonData);
-      res.json(results);
-    })
-    .catch((err) => {
-      res.status(err.statusCode || 500);
-      res.json({ error: err.message });
-    });
   }
 }
 
 function getSitesVulnerability(req, res) {
-  const filePath = `public/json/cites/csn/${req.params.id}/vulnerability.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/cites/csn/${req.params.id}/vulnerability${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));

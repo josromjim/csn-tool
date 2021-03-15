@@ -1,14 +1,15 @@
-const fs = require("fs");
-const normalizeSiteStatus = require("../helpers/index").normalizeSiteStatus;
-const { runQuery, saveFileSync } = require("../helpers");
+const fs = require('fs');
+const normalizeSiteStatus = require('../helpers/index').normalizeSiteStatus;
+const { runQuery, saveFileSync, getQueryString } = require('../helpers');
 
 function getCountries(req, res) {
-  const filePath = `public/json/countries.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/countries${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
   } catch (errRead) {
-    const query = "SELECT * FROM countries";
+    const query = 'SELECT * FROM countries';
     runQuery(query)
       .then((data) => {
         const result = JSON.parse(data).rows || [];
@@ -24,7 +25,8 @@ function getCountries(req, res) {
 }
 
 function getCountryDetails(req, res) {
-  const filePath = `public/json/countries/${req.params.iso}/index.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/countries/${req.params.iso}/index${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -39,7 +41,7 @@ function getCountryDetails(req, res) {
           res.json(result.rows[0]);
         } else {
           res.status(404);
-          res.json({ error: "No country found" });
+          res.json({ error: 'No country found' });
         }
       })
       .catch((err) => {
@@ -50,7 +52,8 @@ function getCountryDetails(req, res) {
 }
 
 function getCountrySites(req, res) {
-  const filePath = `public/json/countries/${req.params.iso}/cities.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/countries/${req.params.iso}/cities${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -99,7 +102,8 @@ function getCountrySites(req, res) {
 }
 
 function getCountryCriticalSites(req, res) {
-  const filePath = `public/json/countries/${req.params.iso}/criticalSites.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/countries/${req.params.iso}/criticalSites${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -148,7 +152,8 @@ function getCountryCriticalSites(req, res) {
 }
 
 function getCountrySpecies(req, res) {
-  const filePath = `public/json/countries/${req.params.iso}/species.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/countries/${req.params.iso}/species${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -179,7 +184,8 @@ function getCountrySpecies(req, res) {
   }
 }
 function getCountryPopulations(req, res) {
-  const filePath = `public/json/countries/${req.params.iso}/populations.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/countries/${req.params.iso}/populations${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -222,13 +228,14 @@ function getCountryPopulations(req, res) {
 }
 
 function getCountryWithLookAlikeCounts(req, res) {
-  const filePath = `public/json/countries/${req.params.iso}/look-alike-species-count.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/countries/${req.params.iso}/look-alike-species-count${queryStr}.json`;
   try {
-    if(req.query.filter) throw 'have filter';
+    if (req.query.filter) throw new Error('have filter');
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
   } catch (errRead) {
-    let query = `
+    const query = `
       SELECT COUNT(sq.*) as counts
       FROM (
           SELECT DISTINCT
@@ -254,41 +261,39 @@ function getCountryWithLookAlikeCounts(req, res) {
             AND pi.species_main_id = sm.species_id
             WHERE
             sm.confusion_group IS NOT NULL
-      `;
-    if(req.query.filter) query += `
+            ${req.query.filter ? `
             AND (
-                  sm.scientific_name = '${req.params.filter}'
-                  OR sm.english_name = '${req.params.filter}'
-                  OR pi.population_name = '${req.params.filter}'
-                ) `;
-    query += `
-            ) as sq
-      `;
-    
-      runQuery(query)
-        .then((data) => {
-          const result = JSON.parse(data).rows || [];
-          const jsonData = JSON.stringify(result[0].counts  );
-          if(!req.params.filter) saveFileSync(filePath, jsonData);
-          res.json(result[0].counts);
-        })
-        .catch((err) => {
-          res.status(err.statusCode || 500);
-          res.json({ error: err.message });
-        });
+              sm.english_name LIKE '${req.query.filter}%'
+              OR sm.scientific_name LIKE '${req.query.filter}%'
+              OR sm.french_name LIKE '${req.query.filter}%'
+              OR pi.population_name LIKE '${req.query.filter}%'
+            )
+            ` : ''}
+            ) as sq`;
+    runQuery(query)
+      .then((data) => {
+        const result = JSON.parse(data).rows || [];
+        const jsonData = JSON.stringify(result[0].counts);
+        if (!req.params.filter) saveFileSync(filePath, jsonData);
+        res.json(result[0].counts);
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
+      });
   }
 }
 
 function getCountryPopsWithLookAlikeCounts(req, res) {
   const { limit = 10, offset = 0 } = req.query;
-  const page = parseInt((parseInt(offset) + 10) / 10);
-  const filePath = `public/json/countries/${req.params.iso}/look-alike-species-page${page}.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/countries/${req.params.iso}/look-alike-species${queryStr}.json`;
   try {
-    if(req.query.filter) throw 'have filter';
+    if (req.query.filter) throw new Error('have filter');
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
   } catch (errRead) {
-    let query = `SELECT 
+    const query = `SELECT 
     sq.scientific_name AS original_species,
     sq.english_name,
     sq.french_name,
@@ -326,14 +331,14 @@ function getCountryPopsWithLookAlikeCounts(req, res) {
       AND pi.species_main_id = sm.species_id
       WHERE
       sm.confusion_group IS NOT NULL
-      ${req.query.filter ? (`
+      ${req.query.filter ? `
       AND (
         sm.english_name LIKE '${req.query.filter}%'
         OR sm.scientific_name LIKE '${req.query.filter}%'
         OR sm.french_name LIKE '${req.query.filter}%'
         OR pi.population_name LIKE '${req.query.filter}%'
       )
-      `) : ''}
+      ` : ''}
       GROUP BY 
       sm.confusion_group, 
       sm.species_id, 
@@ -371,101 +376,102 @@ function getCountryPopsWithLookAlikeCounts(req, res) {
     sq.taxonomic_sequence
     ORDER BY sq.taxonomic_sequence ASC`;
 
-  runQuery(query)
-    .then((data) => {
-      const result = JSON.parse(data).rows || [];
-      const jsonData = JSON.stringify(result);
-      if(!req.query.filter) saveFileSync(filePath, jsonData);
-      res.json(result);
-    })
-    .catch((err) => {
-      res.status(err.statusCode || 500);
-      res.json({ error: err.message });
-    }); 
+    runQuery(query)
+      .then((data) => {
+        const result = JSON.parse(data).rows || [];
+        const jsonData = JSON.stringify(result);
+        if (!req.query.filter) saveFileSync(filePath, jsonData);
+        res.json(result);
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
+      });
   }
 }
 
 function getCountryLookAlikeSpecies(req, res) {
-  const filePath = `public/json/countries/${req.params.iso}/look-alike-species/${req.params.populationId}.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/countries/${req.params.iso}/look-alike-species/${req.params.populationId}${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
   } catch (errRead) {
+    const query = `
+      SELECT
+        sm.scientific_name AS scientific_name,
+        sm.english_name,
+        sm.french_name,
+        sm.species_id AS id,
+        pi.population_name AS population,
+        pi.a,
+        pi.b,
+        pi.c,
+        pi.wpepopid,
+        pi.wpepopid AS pop_id
+      FROM
+      (
+        SELECT 
+        sm.confusion_group,
+        sm.species_id, 
+        sm.scientific_name,
+        sm.taxonomic_sequence,
+        pi.the_geom, 
+        pi.wpepopid, 
+        pi.population_name, 
+        pi.a, 
+        pi.b, 
+        pi.c
+        FROM species AS sm
+        INNER JOIN species_country AS sc
+        ON sc.species_id = sm.species_id
+        AND sc.iso = '${req.params.iso}'
+        INNER JOIN world_borders AS wb ON
+        wb.iso3 = sc.iso
+        INNER JOIN populations AS pi
+        ON ST_INTERSECTS(pi.the_geom, wb.the_geom)
+        AND pi.species_main_id = sm.species_id
+        AND pi.wpepopid = ${req.params.populationId}
+        WHERE sm.confusion_group IS NOT NULL
+        GROUP BY confusion_group,
+        sm.species_id, 
+        sm.scientific_name,
+        sm.taxonomic_sequence,
+        pi.the_geom, 
+        pi.wpepopid, 
+        pi.population_name, 
+        pi.a, 
+        pi.b, 
+        pi.c
+      ) as sq
+      INNER JOIN species AS sm ON
+      (sq.confusion_group && sm.confusion_group)
+      AND sm.species_id != sq.species_id
+      INNER JOIN world_borders AS wb ON
+      wb.iso3 = '${req.params.iso}'
+      INNER JOIN populations AS pi
+      ON ST_INTERSECTS(pi.the_geom, wb.the_geom)
+      AND ST_INTERSECTS(pi.the_geom, sq.the_geom)
+      AND pi.species_main_id = sm.species_id
+      ORDER BY sm.taxonomic_sequence ASC`;
 
+    runQuery(query)
+      .then((data) => {
+        const result = JSON.parse(data).rows || [];
+        const jsonData = JSON.stringify(result);
+        saveFileSync(filePath, jsonData);
+        res.json(result);
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
+      });
   }
-  const query = `
-    SELECT
-      sm.scientific_name AS scientific_name,
-      sm.english_name,
-      sm.french_name,
-      sm.species_id AS id,
-      pi.population_name AS population,
-      pi.a,
-      pi.b,
-      pi.c,
-      pi.wpepopid,
-      pi.wpepopid AS pop_id
-    FROM
-    (
-      SELECT 
-       sm.confusion_group,
-       sm.species_id, 
-       sm.scientific_name,
-       sm.taxonomic_sequence,
-       pi.the_geom, 
-       pi.wpepopid, 
-       pi.population_name, 
-       pi.a, 
-       pi.b, 
-       pi.c
-       FROM species AS sm
-       INNER JOIN species_country AS sc
-       ON sc.species_id = sm.species_id
-       AND sc.iso = '${req.params.iso}'
-       INNER JOIN world_borders AS wb ON
-       wb.iso3 = sc.iso
-       INNER JOIN populations AS pi
-       ON ST_INTERSECTS(pi.the_geom, wb.the_geom)
-       AND pi.species_main_id = sm.species_id
-       AND pi.wpepopid = ${req.params.populationId}
-       WHERE sm.confusion_group IS NOT NULL
-       GROUP BY confusion_group,
-       sm.species_id, 
-       sm.scientific_name,
-       sm.taxonomic_sequence,
-       pi.the_geom, 
-       pi.wpepopid, 
-       pi.population_name, 
-       pi.a, 
-       pi.b, 
-       pi.c
-    ) as sq
-    INNER JOIN species AS sm ON
-    (sq.confusion_group && sm.confusion_group)
-    AND sm.species_id != sq.species_id
-    INNER JOIN world_borders AS wb ON
-    wb.iso3 = '${req.params.iso}'
-    INNER JOIN populations AS pi
-    ON ST_INTERSECTS(pi.the_geom, wb.the_geom)
-    AND ST_INTERSECTS(pi.the_geom, sq.the_geom)
-    AND pi.species_main_id = sm.species_id
-    ORDER BY sm.taxonomic_sequence ASC`;
-
-  runQuery(query)
-    .then((data) => {
-      const result = JSON.parse(data).rows || [];
-      const jsonData = JSON.stringify(result);
-      saveFileSync(filePath, jsonData);
-      res.json(result);
-    })
-    .catch((err) => {
-      res.status(err.statusCode || 500);
-      res.json({ error: err.message });
-    });
 }
 
 function getTriggerSpeciesSuitability(req, res) {
-  const filePath = `public/json//countries/${req.params.iso}/trigger-suitability.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/countries/${req.params.iso}/trigger-suitability${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -517,5 +523,5 @@ module.exports = {
   getCountryPopsWithLookAlikeCounts,
   getCountryLookAlikeSpecies,
   getTriggerSpeciesSuitability,
-  getCountryWithLookAlikeCounts,
+  getCountryWithLookAlikeCounts
 };

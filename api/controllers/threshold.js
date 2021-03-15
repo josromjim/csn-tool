@@ -1,10 +1,11 @@
-const fs = require("fs");
+const fs = require('fs');
 const { runQuery, saveFileSync } = require('../helpers');
 
 function getSpeciesByPosition(req, res) {
   // TO include the geom
   // SELECT ST_AsGeoJSON(p.the_geom)
-  const filePath = `public/json/threshold/${req.params.lat}/${req.params.lng}/${req.params.zoom}.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/threshold/${req.params.lat}/${req.params.lng}/${req.params.zoom}${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));

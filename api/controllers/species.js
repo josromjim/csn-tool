@@ -1,10 +1,11 @@
-const fs = require("fs");
+const fs = require('fs');
 const normalizeSiteStatus = require('../helpers/index').normalizeSiteStatus;
 const mergeNames = require('../helpers/index').mergeNames;
-const { runQuery, saveFileSync } = require('../helpers');
+const { runQuery, saveFileSync, getQueryString } = require('../helpers');
 
 function getSpeciesList(req, res) {
-  const filePath = `public/json/species.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/species${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -33,7 +34,8 @@ function getSpeciesList(req, res) {
 }
 
 function getSpeciesDetails(req, res) {
-  const filePath = `public/json/species/${req.params.id}/index.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/species/${req.params.id}/index${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -49,15 +51,17 @@ function getSpeciesDetails(req, res) {
         if (results && results.length > 0) {
           const row = results[0];
           const result = {
-            species: [{
-              scientific_name: row.scientific_name,
-              english_name: row.english_name,
-              french_name: row.french_name,
-              family: row.family,
-              id: row.id,
-              iucn_category: row.iucn_category,
-              hyperlink: row.hyperlink
-            }]
+            species: [
+              {
+                scientific_name: row.scientific_name,
+                english_name: row.english_name,
+                french_name: row.french_name,
+                family: row.family,
+                id: row.id,
+                iucn_category: row.iucn_category,
+                hyperlink: row.hyperlink
+              }
+            ]
           };
           const jsonData = JSON.stringify(result);
           saveFileSync(filePath, jsonData);
@@ -75,7 +79,8 @@ function getSpeciesDetails(req, res) {
 }
 
 function getSpeciesSites(req, res) {
-  const filePath = `public/json/species/${req.params.id}/sites.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/species/${req.params.id}/sites${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -97,34 +102,35 @@ function getSpeciesSites(req, res) {
     ss.season, si.country, si.iso2, si.protection_status ,si.site_name, si.lat, si.lon,
     si.hyperlink, si.site_id, 1, ss.geometric_mean, ss.start, ss._end
     ORDER BY si.site_name`;
-  runQuery(query)
-    .then((data) => {
-      const results = JSON.parse(data).rows || [];
-      if (results && results.length > 0) {
-        results.map((item) => {
-          const site = item;
-          site.protected_slug = normalizeSiteStatus(item.protected);
-          site.lat = +item.lat.toFixed(3);
-          site.lon = +item.lon.toFixed(3);
-          return site;
-        });
-        const jsonData = JSON.stringify(results);
-        saveFileSync(filePath, jsonData);
-        res.json(results);
-      } else {
-        res.status(404);
-        res.json({ error: 'No IBA sites for this species' });
-      }
-    })
-    .catch((err) => {
-      res.status(err.statusCode || 500);
-      res.json({ error: err.message });
-    });
+    runQuery(query)
+      .then((data) => {
+        const results = JSON.parse(data).rows || [];
+        if (results && results.length > 0) {
+          results.map((item) => {
+            const site = item;
+            site.protected_slug = normalizeSiteStatus(item.protected);
+            site.lat = +item.lat.toFixed(3);
+            site.lon = +item.lon.toFixed(3);
+            return site;
+          });
+          const jsonData = JSON.stringify(results);
+          saveFileSync(filePath, jsonData);
+          res.json(results);
+        } else {
+          res.status(404);
+          res.json({ error: 'No IBA sites for this species' });
+        }
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
+      });
   }
 }
 
 function getSpeciesCriticalSites(req, res) {
-  const filePath = `public/json/species/${req.params.id}/criticalSites.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/species/${req.params.id}/criticalSites${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -156,34 +162,35 @@ function getSpeciesCriticalSites(req, res) {
     WHERE s.species_id = '${req.params.id}'
     ORDER BY si.site_name`;
 
-  runQuery(query)
-    .then((data) => {
-      const results = JSON.parse(data).rows || [];
-      if (results && results.length > 0) {
-        results.map((item) => {
-          const site = item;
-          site.protected_slug = normalizeSiteStatus(item.protected);
-          site.lat = +item.lat.toFixed(3);
-          site.lon = +item.lon.toFixed(3);
-          return site;
-        });
-        const jsonData = JSON.stringify(results);
-        saveFileSync(filePath, jsonData);
-        res.json(results);
-      } else {
-        res.status(404);
-        res.json({ error: 'No species' });
-      }
-    })
-    .catch((err) => {
-      res.status(err.statusCode || 500);
-      res.json({ error: err.message });
-    });
+    runQuery(query)
+      .then((data) => {
+        const results = JSON.parse(data).rows || [];
+        if (results && results.length > 0) {
+          results.map((item) => {
+            const site = item;
+            site.protected_slug = normalizeSiteStatus(item.protected);
+            site.lat = +item.lat.toFixed(3);
+            site.lon = +item.lon.toFixed(3);
+            return site;
+          });
+          const jsonData = JSON.stringify(results);
+          saveFileSync(filePath, jsonData);
+          res.json(results);
+        } else {
+          res.status(404);
+          res.json({ error: 'No species' });
+        }
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
+      });
   }
 }
 
 function getSpeciesPopulation(req, res) {
-  const filePath = `public/json/species/${req.params.id}/population.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/species/${req.params.id}/population${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -220,7 +227,8 @@ function getSpeciesPopulation(req, res) {
 }
 
 function getSpeciesLookAlikeSpecies(req, res) {
-  const filePath = `public/json/species/${req.params.id}/look-alike-species/index.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/species/${req.params.id}/look-alike-species/index${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -263,7 +271,11 @@ function getSpeciesLookAlikeSpecies(req, res) {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           const params = [
-            { columnName: 'confusion_name', field1: 'confusion_species', field2: 'english_name' }
+            {
+              columnName: 'confusion_name',
+              field1: 'confusion_species',
+              field2: 'english_name'
+            }
           ];
           const dataParsed = mergeNames(results, params);
           const jsonData = JSON.stringify(dataParsed);
@@ -281,7 +293,8 @@ function getSpeciesLookAlikeSpecies(req, res) {
 }
 
 function getPopulationsLookAlikeSpecies(req, res) {
-  const filePath = `public/json/species/${req.params.id}/look-alike-species/${req.params.populationId}.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/species/${req.params.id}/look-alike-species/${req.params.populationId}${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -315,7 +328,11 @@ function getPopulationsLookAlikeSpecies(req, res) {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           const params = [
-            { columnName: 'confusion_name', field1: 'confusion_species', field2: 'english_name' }
+            {
+              columnName: 'confusion_name',
+              field1: 'confusion_species',
+              field2: 'english_name'
+            }
           ];
           const dataParsed = mergeNames(results, params);
           const jsonData = JSON.stringify(dataParsed);
@@ -330,11 +347,12 @@ function getPopulationsLookAlikeSpecies(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
-    }
+  }
 }
 
 function getPopulationVulnerability(req, res) {
-  const filePath = `public/json/species/${req.params.id}/population-vulnerability.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/species/${req.params.id}/population-vulnerability${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -387,7 +405,7 @@ function getPopulationVulnerability(req, res) {
       INNER JOIN populations ON populations.wpepopid = t1p.wpepopid
       WHERE t1p.ssis = '${req.params.id}'
       ORDER BY populations.population_name ASC`;
-  
+
     runQuery(query)
       .then((data) => {
         const results = JSON.parse(data).rows || [];
@@ -408,7 +426,8 @@ function getPopulationVulnerability(req, res) {
 }
 
 function getTriggerCriticalSitesSuitability(req, res) {
-  const filePath = `public/json/species/${req.params.id}/trigger-cs-suitability.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/species/${req.params.id}/trigger-cs-suitability${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
@@ -442,7 +461,7 @@ function getTriggerCriticalSitesSuitability(req, res) {
       .then((data) => {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
-          results.map(item => {
+          results.map((item) => {
             const row = item;
             row.lat = +item.lat.toFixed(3);
             row.lon = +item.lon.toFixed(3);
@@ -464,19 +483,19 @@ function getTriggerCriticalSitesSuitability(req, res) {
 }
 
 function getSpeciesSeasons(req, res) {
-  const filePath = `public/json/species/${req.params.id}/seasons.json`;
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/species/${req.params.id}/seasons${queryStr}.json`;
   try {
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
   } catch (errRead) {
     const query = `SELECT DISTINCT season FROM table_1_species WHERE ssis = ${req.params.id}`;
-    runQuery(query)
-      .then((data) => {
-        const results = JSON.parse(data).rows || [];
-        const jsonData = JSON.stringify(results);
-        saveFileSync(filePath, jsonData);
-        res.json(results);
-      });
+    runQuery(query).then((data) => {
+      const results = JSON.parse(data).rows || [];
+      const jsonData = JSON.stringify(results);
+      saveFileSync(filePath, jsonData);
+      res.json(results);
+    });
   }
 }
 
