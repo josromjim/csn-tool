@@ -2,18 +2,34 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router';
 import Select from 'react-select';
-import { translations } from 'locales/translations';
+import { translations as translationsLoad } from 'locales/translations';
 
 import MainNav from 'components/common/MainNav';
 
 
 class Header extends React.Component {
-  constructor() {
-    super();
-    this.languages = Object.keys(translations).map((lang) => (
-      { value: lang, label: lang.toUpperCase() }
-    ));
-    this.onSelectChange = this.onSelectChange.bind(this);
+  constructor(props) {
+    super(props);
+    this.state = {
+      translations : {},
+      languages : [
+        {
+          value: this.props.lang,
+          label: this.props.lang.toUpperCase()
+        }
+      ]
+    };
+  }
+
+  componentDidMount() {
+    translationsLoad
+      .then((response)=>{
+        const loadLanguages = Object.keys(response).map((lang) => (
+          { value: lang, label: lang.toUpperCase() }
+        ));
+        this.setState({translations: response});
+        this.setState({languages: loadLanguages});
+      })
   }
 
   onSelectChange(lang) {
@@ -46,7 +62,7 @@ class Header extends React.Component {
               clearable={false}
               searchable={false}
               value={this.props.lang}
-              options={this.languages}
+              options={this.state.languages}
               onChange={this.onSelectChange}
             />
           </div>

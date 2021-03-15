@@ -3,17 +3,10 @@ import PropTypes from 'prop-types';
 import GoBackLink from 'containers/common/GoBackLink';
 import CountriesMap from 'containers/countries/CountriesMap';
 import CountriesTable from 'containers/countries/CountriesTable';
-import { translations } from 'locales/translations';
 import { StickyContainer } from 'react-sticky';
 import CountriesSearch from 'containers/countries/CountriesSearch';
-
+ 
 class CountriesPage extends React.Component {
-  constructor() {
-    super();
-    this.languages = Object.keys(translations).map((lang) => (
-      { value: lang, label: lang.toUpperCase() }
-    ));
-  }
 
   componentWillMount() {
     this.getData(this.props);

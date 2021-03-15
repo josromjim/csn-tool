@@ -31,7 +31,7 @@ async function getTheData(auth) {
     });
     await fs.writeFile(
       'public/json/locales.json',
-      JSON.stringify(translations),
+      JSON.stringify(resTranslations),
       {
         encoding: 'utf8',
         mode: 0o777,
@@ -41,7 +41,7 @@ async function getTheData(auth) {
         if (err) throw err;
       }
     );
-    return translations;
+    return resTranslations;
   }
 }
 /* eslint-enable */

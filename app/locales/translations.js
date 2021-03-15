@@ -1,3 +1,13 @@
+const getLocale = new Promise((resolve,reject)=>{
+  fetch('http://localhost:3000/json/locales.json')
+    .then((response) => response.json())
+    .then((data)=>resolve(data))
+    .catch((err)=>console.log(err))
+})
+
+export const translations = getLocale || {};
+
+/*
 export const translations = {
   en: {
     'country': 'Country',
@@ -669,4 +679,4 @@ export const translations = {
     'season_ev': 'Эволюция сезонной модели',
     'legendsTitle': 'Легенда'
   },
-}
+}*/

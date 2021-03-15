@@ -5,9 +5,24 @@ import Header from 'containers/common/Header';
 import FeedbackForm from 'components/common/Feedback';
 import Footer from 'containers/common/Footer';
 
-import { translations } from 'locales/translations';
-
+import { translations as translationsLoad } from 'locales/translations';
+ 
 class ContainerPage extends React.Component {
+  constructor(props) {
+    super(props);
+    const translateObj = {};
+    translateObj[this.props.location.pathname.split('/')[0]] = {};
+    this.state = {
+      translations : translateObj
+    }
+  }
+
+  componentDidMount() {
+    translationsLoad
+      .then((response)=>{
+        this.setState({translations: response});
+      })
+  }
 
   getChildContext() {
     const location = this.props.location;
@@ -32,7 +47,7 @@ class ContainerPage extends React.Component {
 
   render() {
     return (
-      <I18n translations={translations} initialLang={this.props.params.lang}>
+      <I18n translations={this.state.translations} initialLang={this.props.params.lang}>
         <div>
           <Header />
           <FeedbackForm />
