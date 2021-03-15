@@ -212,13 +212,22 @@ class TableListHeader extends React.Component {
   }
 
   renderHeaderColumn({ children, index, colWidth, extraClass, column, style }) {
+
+    const isDescription = !(
+      !this.context.t(`${column}_descr`) || 
+      this.context.t(`${column}_descr`).length === 0 ||
+      this.context.t(`${column}_descr`) === `${column}_descr`
+    );
+
     const handlerPopup = () => {
       if (typeof column === 'string') {
-        this.setState({
-          modalTitle: this.context.t(column),
-          modalDescription: this.context.t(`${column}_descr`),
-          modalOpen: !this.state.modalOpen,
-        });
+        if (isDescription) {
+          this.setState({
+            modalTitle: this.context.t(column),
+            modalDescription: this.context.t(`${column}_descr`),
+            modalOpen: !this.state.modalOpen,
+          });
+        }
       } else {
         this.setState({
           modalTitle: this.context.t('AEWA Table 1 Column'),
@@ -228,22 +237,35 @@ class TableListHeader extends React.Component {
       }
     }
 
+    const toltipDescription = (str) => {
+      const count = 25
+      if (str && str.length > count) {
+        return str.slice(0, count) + '...'; 
+      }
+      return str;
+    }
+
+    console.log(isDescription)
     return (
       <div
         key={index}
         className={`text -title popup ${extraClass}`}
-        style={{ width: `${colWidth}%`, ...style }}
+        style={{
+          width: `${colWidth}%`,
+          ...style,
+          cursor: isDescription ? 'pointer' : 'auto', 
+        }}
         title={column && getTitle(column)}
         onClick={handlerPopup}
       >
-        {typeof column === 'string' ? (
+        {(typeof column === 'string' && isDescription) ? (
           <span className="popup">
             <div className="popup-content">
                 <h3 className="popup-content-title">
                   {this.context.t(column)}
                 </h3>
                 <div className="popup-content-description">
-                  {this.context.t(`${column}_descr`)}
+                  {toltipDescription(this.context.t(`${column}_descr`))}
                 </div>
             </div>
           </span>
