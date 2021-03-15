@@ -4,8 +4,14 @@ const SitesCtrl = require('./controllers/sites');
 const SpeciesCtrl = require('./controllers/species');
 const ThresholdCtrl = require('./controllers/threshold');
 const SearchCtrl = require('./controllers/search');
+const TablesCtrl = require('./controllers/tables');
 
 const router = Express.Router(); // eslint-disable-line new-cap
+
+// Google tables
+router.route('/locales/import-from-js').get(TablesCtrl.importFromJs);
+router.route('/locales/import-from-sheet').get(TablesCtrl.importFromSheet);
+
 
 // Countries
 router.route('/countries').get(CountriesCtrl.getCountries);
