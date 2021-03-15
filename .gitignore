@@ -10,6 +10,9 @@
 # Vendors
 /node_modules
 
+# Json
+/public/json
+
 # Logs
 *.log*
 
