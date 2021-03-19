@@ -2,6 +2,7 @@ const fs = require('fs');
 const keys = require('../helpers/keys');
 const { google } = require('googleapis');
 const translations = require('../helpers/timeTransl');
+const { runQuery, saveFileSync, getQueryString } = require('../helpers');
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const tableId = process.env.GOOGLE_TABLE_ID;
@@ -88,20 +89,20 @@ const importFromSheet = async (req, res) => {
 };
 
 const importFromJs = async (req, res) => {
-  const trKeys = Object.keys(translations);
-  const dataKey = trKeys.sort((a, b) => (Object.keys(
-    translations[a]).length < Object.keys(translations[b]).length
-    ? 1
-    : -1
-  )[0]);
-  const singleData = translations[dataKey];
-  const dataWords = Object.keys(singleData).map((item) => {
-    const words = trKeys.map((lang) => translations[lang][item]);
-    return [item, ...words];
-  });
-  const data = [['Label', ...trKeys], ...dataWords];
-  const range = `locales!A1:E${Object.keys(singleData).length + 1}`;
   try {
+    const trKeys = Object.keys(translations);
+    const dataKey = trKeys.sort((a, b) => (Object.keys(
+      translations[a]).length < Object.keys(translations[b]).length
+      ? 1
+      : -1
+    )[0]);
+    const singleData = translations[dataKey];
+    const dataWords = Object.keys(singleData).map((item) => {
+      const words = trKeys.map((lang) => translations[lang][item]);
+      return [item, ...words];
+    });
+    const data = [['Label', ...trKeys], ...dataWords];
+    const range = `locales!A1:E${Object.keys(singleData).length + 1}`;
     const client = new google.auth.JWT(
       keys.client_email,
       null,
@@ -118,7 +119,53 @@ const importFromJs = async (req, res) => {
   }
 };
 
+const getTheMethodsData = async (auth) => {
+  const tableId = '1FKsvpgbajxdWMww9bR5336MabiYSHREoVULKVI5B2kY';
+  const gsapi = google.sheets({ version: 'v4', auth });
+  const opt1 = {
+    spreadsheetId: tableId,
+    range: 'A:Z'
+  };
+  const data = await gsapi.spreadsheets.values.get(opt1);
+  const rows = data.data.values;
+  const convert = rows.map(r => ({
+    wpepopid: r[1],
+    size_method: r[4],
+    trend_method: r[5],
+  })).filter((r, n) => r.size_method && r.trend_method && n !== 0);
+  // console.log(convert);
+  // console.log(convert.length);
+
+  return convert;
+};
+
+
+const importTrendSizeMethods = async (req, res) => {
+  try {
+    const client = new google.auth.JWT(
+      keys.client_email,
+      null,
+      keys.private_key,
+      SCOPES
+    );
+
+    await client.authorize();
+    const data = await getTheMethodsData(client);
+    data.forEach(item => {
+      const query = `UPDATE populations SET size_method='${item.size_method}', trend_method='${item.trend_method}' WHERE wpepopid='${item.wpepopid}';`;
+      console.log(query);
+    })
+
+    res.json({ ok: 'ok' });
+
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
+  }
+};
+
 module.exports = {
   importFromJs,
-  importFromSheet
+  importFromSheet,
+  importTrendSizeMethods,
 };

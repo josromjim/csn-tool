@@ -201,6 +201,8 @@ function getSpeciesPopulation(req, res) {
       table_1_status,
       p.species, p.wpepopid, p.flyway_range, p.year_start, p.year_end, p.size_min,
       p.size_max, p.ramsar_criterion_6 AS ramsar_criterion,
+      p.size_method,
+      p.trend_method,
       'http://wpe.wetlands.org/view/' || p.wpepopid AS pop_hyperlink
       FROM species s
       INNER JOIN populations p on p.species_main_id = s.species_id

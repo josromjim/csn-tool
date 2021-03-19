@@ -204,7 +204,9 @@ function getCountryPopulations(req, res) {
       pi.year_start, pi.year_end,
       pi.size_min, pi.size_max,
       pi.population_name AS population,
-      pi.ramsar_criterion_6 AS ramsar_criterion
+      pi.ramsar_criterion_6 AS ramsar_criterion,
+      pi.size_method,
+      pi.trend_method
     FROM populations AS pi
     INNER JOIN species_country AS sc ON sc.species_id = pi.species_main_id AND sc.country_status != 'Vagrant'
     INNER JOIN countries c ON c.country_id = sc.country_id AND c.iso3 = '${req.params.iso}'

@@ -9,7 +9,7 @@ const numbersAsText = ['year', 'start', 'end', 'year_end', 'year_start',
   'id', 'site_id', 'lat', 'lon', 'pop_id'];
 const columnsCenterAligned = ['a', 'b', 'c', 'original_a', 'original_b',
   'original_c', 'iba', 'csn', 'iba_species', 'csn_species',
-  'id', 'site_id', 'lat', 'lon', 'pop_id'];
+  'id', 'site_id', 'lat', 'lon', 'pop_id', 'size_method', 'trend_method'];
 
 function detailLinkFrame(label, link) {
   return (

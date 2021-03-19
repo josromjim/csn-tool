@@ -12,6 +12,9 @@ const router = Express.Router(); // eslint-disable-line new-cap
 router.route('/locales/import-from-js').get(TablesCtrl.importFromJs);
 router.route('/locales/import-from-sheet').get(TablesCtrl.importFromSheet);
 
+// Carto data update
+router.route('/carto/populations').get(TablesCtrl.importTrendSizeMethods);
+
 
 // Countries
 router.route('/countries').get(CountriesCtrl.getCountries);
