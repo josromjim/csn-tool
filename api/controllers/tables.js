@@ -151,10 +151,9 @@ const importTrendSizeMethods = async (req, res) => {
     data.forEach(item => {
       const query = `UPDATE populations SET size_method='${item.size_method}', trend_method='${item.trend_method}' WHERE wpepopid='${item.wpepopid}';`;
       arr.push(query);
-    })
+    });
 
     res.json({ data: arr });
-
   } catch (err) {
     res.status(err.statusCode || 500);
     res.json({ error: err.message });
@@ -164,5 +163,5 @@ const importTrendSizeMethods = async (req, res) => {
 module.exports = {
   importFromJs,
   importFromSheet,
-  importTrendSizeMethods,
+  importTrendSizeMethods
 };
