@@ -211,6 +211,29 @@ class TableListHeader extends React.Component {
     );
   }
 
+  handlerOpenPopup(column) {
+    const isDescription = !(
+      !this.context.t(`${column}_descr`) || 
+      this.context.t(`${column}_descr`).length === 0 ||
+      this.context.t(`${column}_descr`) === `${column}_descr`
+    );
+    if (typeof column === 'string') {
+      if (isDescription) {
+        this.setState({
+          modalTitle: this.context.t(column),
+          modalDescription: this.context.t(`${column}_descr`),
+          modalOpen: !this.state.modalOpen,
+        });
+      }
+    } else {
+      this.setState({
+        modalTitle: this.context.t('AEWA Table 1 Column'),
+        modalDescription: this.context.t(`AEWA Table 1 Column`),
+        modalOpen: !this.state.modalOpen,
+      });
+    }
+  }
+
   renderHeaderColumn({ children, index, colWidth, extraClass, column, style }) {
 
     const isDescription = !(
@@ -219,23 +242,6 @@ class TableListHeader extends React.Component {
       this.context.t(`${column}_descr`) === `${column}_descr`
     );
 
-    const handlerPopup = () => {
-      if (typeof column === 'string') {
-        if (isDescription) {
-          this.setState({
-            modalTitle: this.context.t(column),
-            modalDescription: this.context.t(`${column}_descr`),
-            modalOpen: !this.state.modalOpen,
-          });
-        }
-      } else {
-        this.setState({
-          modalTitle: this.context.t('AEWA Table 1 Column'),
-          modalDescription: this.context.t(`AEWA Table 1 Column`),
-          modalOpen: !this.state.modalOpen,
-        });
-      }
-    }
 
     const toltipDescription = (str) => {
       const count = 25
@@ -245,7 +251,6 @@ class TableListHeader extends React.Component {
       return str;
     }
 
-    console.log(isDescription)
     return (
       <div
         key={index}
@@ -256,7 +261,6 @@ class TableListHeader extends React.Component {
           cursor: isDescription ? 'pointer' : 'auto', 
         }}
         title={column && getTitle(column)}
-        onClick={handlerPopup}
       >
         {(typeof column === 'string' && isDescription) ? (
           <span className="popup">
@@ -307,7 +311,7 @@ class TableListHeader extends React.Component {
 
   renderHeaderColumnInner(column) {
     const blockChildren = [
-      this.context.t(column)
+      <span onClick={() => this.handlerOpenPopup(column)}>{this.context.t(column)}</span>
     ];
 
     if (columnsWithFilter.some((col) => col.column === column)) {
@@ -366,6 +370,7 @@ class TableListHeader extends React.Component {
           description={this.state.modalDescription}
         />
         {columnChunks.map((item, index) => {
+          console.log(item);
           let columnInner = null;
           let thisColWidth = colWidth;
           const style = {};
