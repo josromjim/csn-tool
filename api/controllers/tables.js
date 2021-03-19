@@ -2,7 +2,6 @@ const fs = require('fs');
 const keys = require('../helpers/keys');
 const { google } = require('googleapis');
 const translations = require('../helpers/timeTransl');
-const { runQuery, saveFileSync, getQueryString } = require('../helpers');
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const tableId = process.env.GOOGLE_TABLE_ID;
@@ -120,10 +119,10 @@ const importFromJs = async (req, res) => {
 };
 
 const getTheMethodsData = async (auth) => {
-  const tableId = '1FKsvpgbajxdWMww9bR5336MabiYSHREoVULKVI5B2kY';
+  const tableIdImport = '1FKsvpgbajxdWMww9bR5336MabiYSHREoVULKVI5B2kY';
   const gsapi = google.sheets({ version: 'v4', auth });
   const opt1 = {
-    spreadsheetId: tableId,
+    spreadsheetId: tableIdImport,
     range: 'A:Z'
   };
   const data = await gsapi.spreadsheets.values.get(opt1);
@@ -131,11 +130,8 @@ const getTheMethodsData = async (auth) => {
   const convert = rows.map(r => ({
     wpepopid: r[1],
     size_method: r[4],
-    trend_method: r[5],
+    trend_method: r[5]
   })).filter((r, n) => r.size_method && r.trend_method && n !== 0);
-  // console.log(convert);
-  // console.log(convert.length);
-
   return convert;
 };
 
@@ -151,12 +147,13 @@ const importTrendSizeMethods = async (req, res) => {
 
     await client.authorize();
     const data = await getTheMethodsData(client);
+    const arr = [];
     data.forEach(item => {
       const query = `UPDATE populations SET size_method='${item.size_method}', trend_method='${item.trend_method}' WHERE wpepopid='${item.wpepopid}';`;
-      console.log(query);
+      arr.push(query);
     })
 
-    res.json({ ok: 'ok' });
+    res.json({ data: arr });
 
   } catch (err) {
     res.status(err.statusCode || 500);
