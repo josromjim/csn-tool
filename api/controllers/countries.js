@@ -1,6 +1,6 @@
 const fs = require('fs');
 const normalizeSiteStatus = require('../helpers/index').normalizeSiteStatus;
-const { runQuery, saveFileSync, getQueryString } = require('../helpers');
+const { runQuery, saveFileSync, getQueryString, getQueryLookAlikeByOne } = require('../helpers');
 
 function getCountries(req, res) {
   const queryStr = getQueryString(req.query);
@@ -287,7 +287,6 @@ function getCountryWithLookAlikeCounts(req, res) {
 }
 
 function getCountryPopsWithLookAlikeCounts(req, res) {
-  const { limit = 10, offset = 0 } = req.query;
   const queryStr = getQueryString(req.query);
   const filePath = `public/json/countries/${req.params.iso}/look-alike-species${queryStr}.json`;
   try {
@@ -296,14 +295,66 @@ function getCountryPopsWithLookAlikeCounts(req, res) {
     res.json(JSON.parse(data));
   } catch (errRead) {
     const query = `SELECT 
-    sq.scientific_name AS original_species,
-    sq.english_name,
-    sq.french_name,
-    sq.population_name AS population, 
-    sq.a AS original_a,
-    sq.b AS original_b, 
-    sq.c AS original_c,
+    sm.scientific_name AS original_species,
+    sm.english_name,
+    sm.french_name,
+    pi.population_name AS population, 
+    pi.a AS original_a,
+    pi.b AS original_b, 
+    pi.c AS original_c,
+    pi.wpepopid AS pop_id_origin,
+    sm.species_id
+  FROM species AS sm
+  INNER JOIN species_country AS sc
+    ON sc.species_id = sm.species_id
+    AND sc.iso = '${req.params.iso}'
+  INNER JOIN world_borders AS wb 
+    ON wb.iso3 = sc.iso
+  INNER JOIN populations AS pi
+    ON ST_INTERSECTS(pi.the_geom, wb.the_geom)
+    AND pi.species_main_id = sm.species_id
+  WHERE
+    sm.confusion_group IS NOT NULL
+  GROUP BY 
+    sm.confusion_group, 
+    sm.species_id, 
+    sm.scientific_name, 
+    sm.english_name, 
+    sm.french_name,
+    pi.the_geom, 
+    pi.population_name,
+    pi.a, 
+    pi.b, 
+    pi.c, 
+    pi.wpepopid, 
+    sm.taxonomic_sequence
+  ORDER BY sm.taxonomic_sequence ASC`;
+
+    runQuery(query)
+      .then((data) => {
+        const result = JSON.parse(data).rows || [];
+        const jsonData = JSON.stringify(result);
+        if (!req.query.filter) saveFileSync(filePath, jsonData);
+        res.json(result);
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
+      });
+  }
+}
+
+function getCountryPopsWithLookAlikeCountsByOne(req, res) {
+  const queryStr = getQueryString(req.query);
+  const filePath = `public/json/countries/${req.params.iso}/look-alike-species-by-one${req.query.pop_id_origin}-${req.query.species_id}.json`;
+  try {
+    if (req.query.filter) throw new Error('have filter');
+    const data = fs.readFileSync(filePath);
+    res.json(JSON.parse(data));
+  } catch (errRead) {
+    const query = `SELECT
     sq.wpepopid AS pop_id_origin,
+    sq.a,
     COUNT(*) AS confusion_species,
     COUNT(case when pi.a IS NOT NULL
           AND pi.a != '' then pi.population_name end) AS confusion_species_as
@@ -311,50 +362,31 @@ function getCountryPopsWithLookAlikeCounts(req, res) {
     (
       SELECT 
       sm.confusion_group,
-      sm.species_id, 
-      sm.scientific_name,
-      sm.english_name, 
-      sm.french_name, 
-      pi.the_geom, 
-      pi.population_name,
+      sm.species_id,
+      pi.the_geom,
+      pi.wpepopid,
       pi.a, 
-      pi.b, 
-      pi.c, 
-      pi.wpepopid, 
       sm.taxonomic_sequence
       FROM species AS sm
-      INNER JOIN species_country AS sc
-      ON sc.species_id = sm.species_id
-      AND sc.iso = '${req.params.iso}'
-      INNER JOIN world_borders AS wb ON
-      wb.iso3 = sc.iso
-      INNER JOIN populations AS pi
-      ON ST_INTERSECTS(pi.the_geom, wb.the_geom)
-      AND pi.species_main_id = sm.species_id
-      WHERE
-      sm.confusion_group IS NOT NULL
-      ${req.query.filter ? `
-      AND (
-        sm.english_name LIKE '${req.query.filter}%'
-        OR sm.scientific_name LIKE '${req.query.filter}%'
-        OR sm.french_name LIKE '${req.query.filter}%'
-        OR pi.population_name LIKE '${req.query.filter}%'
-      )
-      ` : ''}
+        INNER JOIN species_country AS sc
+            ON sc.species_id = sm.species_id
+            AND sc.iso = '${req.params.iso}'
+        INNER JOIN world_borders AS wb 
+            ON wb.iso3 = sc.iso
+        INNER JOIN populations AS pi
+            ON ST_INTERSECTS(pi.the_geom, wb.the_geom)
+            AND pi.species_main_id = sm.species_id
+            AND pi.wpepopid = '${req.query.pop_id_origin}'
+        WHERE
+          sm.confusion_group IS NOT NULL
+          AND sm.species_id = '${req.query.species_id}'
       GROUP BY 
       sm.confusion_group, 
-      sm.species_id, 
-      sm.scientific_name, 
-      sm.english_name, 
-      sm.french_name,
+      sm.species_id,
       pi.the_geom, 
-      pi.population_name,
-      pi.a, 
-      pi.b, 
-      pi.c, 
+      pi.a,
       pi.wpepopid, 
       sm.taxonomic_sequence
-      LIMIT ${limit} OFFSET ${offset}
     ) as sq
     INNER JOIN species AS sm ON
     (sq.confusion_group && sm.confusion_group)
@@ -365,15 +397,9 @@ function getCountryPopsWithLookAlikeCounts(req, res) {
     ON ST_INTERSECTS(pi.the_geom, wb.the_geom)
     AND ST_INTERSECTS(pi.the_geom, sq.the_geom)
     AND pi.species_main_id = sm.species_id
-    GROUP BY 
-    sq.scientific_name,
-    sq.english_name, 
-    sq.french_name, 
+    GROUP BY  
     sq.species_id, 
-    sq.population_name,
     sq.a, 
-    sq.b,
-    sq.c, 
     sq.wpepopid, 
     sq.taxonomic_sequence
     ORDER BY sq.taxonomic_sequence ASC`;
@@ -525,5 +551,6 @@ module.exports = {
   getCountryPopsWithLookAlikeCounts,
   getCountryLookAlikeSpecies,
   getTriggerSpeciesSuitability,
-  getCountryWithLookAlikeCounts
+  getCountryWithLookAlikeCounts,
+  getCountryPopsWithLookAlikeCountsByOne
 };

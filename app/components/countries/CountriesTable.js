@@ -73,7 +73,12 @@ class CountriesTable extends React.Component {
     const { getCountryLookAlikeSpecies, country, searchFilter } = this.props;
     const offset = (pageNumber - 1) * pageSize + 1;
     console.log('111');
-    getCountryLookAlikeSpecies(
+
+    this.setState({ activePage: pageNumber });
+  }
+
+  async componentDidMount() {
+    await getCountryLookAlikeSpecies(
       country,
       searchFilter,
       {
@@ -81,7 +86,6 @@ class CountriesTable extends React.Component {
         limit: pageSize
       }
     );
-    this.setState({ activePage: pageNumber });
   }
 
   render() {
@@ -132,7 +136,7 @@ class CountriesTable extends React.Component {
             isLookAlike={isLookAlikeSpecies}
           />
         }
-        {isLookAlikeSpeciesPage && (
+        {/*isLookAlikeSpeciesPage && (
           <Pagination
             activePage={this.state.activePage}
             itemsCountPerPage={RESULTS_PER_TABLE_PAGE}
@@ -142,7 +146,7 @@ class CountriesTable extends React.Component {
             itemClass="page-item"
             linkClass="page-link"
           />
-        )}
+        )*/}
       </div>
     );
   }

@@ -15,6 +15,66 @@ function getQueryString(query) {
   return strQuery;
 }
 
+function getQueryLookAlikeByOne(iso='', populationId=0) {
+  return `
+  SELECT
+    sm.scientific_name AS scientific_name,
+    sm.english_name,
+    sm.french_name,
+    sm.species_id AS id,
+    pi.population_name AS population,
+    pi.a,
+    pi.b,
+    pi.c,
+    pi.wpepopid,
+    pi.wpepopid AS pop_id
+  FROM
+  (
+    SELECT 
+    sm.confusion_group,
+    sm.species_id, 
+    sm.scientific_name,
+    sm.taxonomic_sequence,
+    pi.the_geom, 
+    pi.wpepopid, 
+    pi.population_name, 
+    pi.a, 
+    pi.b, 
+    pi.c
+    FROM species AS sm
+    INNER JOIN species_country AS sc
+    ON sc.species_id = sm.species_id
+    AND sc.iso = '${iso}'
+    INNER JOIN world_borders AS wb ON
+    wb.iso3 = sc.iso
+    INNER JOIN populations AS pi
+    ON ST_INTERSECTS(pi.the_geom, wb.the_geom)
+    AND pi.species_main_id = sm.species_id
+    AND pi.wpepopid = ${populationId}
+    WHERE sm.confusion_group IS NOT NULL
+    GROUP BY confusion_group,
+    sm.species_id, 
+    sm.scientific_name,
+    sm.taxonomic_sequence,
+    pi.the_geom, 
+    pi.wpepopid, 
+    pi.population_name, 
+    pi.a, 
+    pi.b, 
+    pi.c
+  ) as sq
+  INNER JOIN species AS sm ON
+  (sq.confusion_group && sm.confusion_group)
+  AND sm.species_id != sq.species_id
+  INNER JOIN world_borders AS wb ON
+  wb.iso3 = '${iso}'
+  INNER JOIN populations AS pi
+  ON ST_INTERSECTS(pi.the_geom, wb.the_geom)
+  AND ST_INTERSECTS(pi.the_geom, sq.the_geom)
+  AND pi.species_main_id = sm.species_id
+  ORDER BY sm.taxonomic_sequence ASC`;
+}
+
 function normalizeSiteStatus(string) {
   if (string && string !== undefined) {
     const uString = string.toUpperCase();
@@ -76,5 +136,6 @@ module.exports = {
   mergeNames,
   runQuery,
   saveFileSync,
-  getQueryString
+  getQueryString,
+  getQueryLookAlikeByOne
 };

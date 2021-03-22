@@ -47,7 +47,7 @@ const mapDispatchToProps = (dispatch) => ({
         break;
       case 'lookAlikeSpecies':
         dispatch(getCountryLookAlikeSpecies(country, filter));
-        dispatch(getCountryLookAlikeSpeciesCount(country, filter));
+        //dispatch(getCountryLookAlikeSpeciesCount(country, filter));
         break;
       case 'lookAlikeSpeciesPopulation':
         dispatch(getCountryLookAlikeSpecies(country, filter));

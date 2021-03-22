@@ -158,7 +158,7 @@ export function getCountrySpecies(iso) {
     }
   };
 }
-
+ 
 export function getCountryPopulations(iso) {
   const url = `${config.apiHost}/countries/${iso}/populations`;
   return (dispatch, getState) => {
@@ -185,24 +185,33 @@ export function getCountryPopulations(iso) {
   };
 }
 
-export function getCountryLookAlikeSpecies(iso, filter, params = { offset: 0, limit: 10 }) {
+export async function getCountryLookAlikeSpecies(iso, filter, params = { offset: 0, limit: 10 }) {
   let paramrow = '';
   if (params) paramrow = Object.keys(params).map(p => `${p}=${params[p]}`).join('&');
   if (filter && filter.length > 0) paramrow += `&filter=${filter}`;
   const url = `${config.apiHost}/countries/${iso}/look-alike-species${paramrow !== '' ? `?${paramrow}` : ''}`;
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const category = getState().countries.selectedCategory;
     try {
       dispatch(setCountryPreload(category, true));
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          dispatch({
-            type: GET_COUNTRIES_SIMILAR_SPECIES,
-            payload: { iso, data }
-          });
-          dispatch(setCountryPreload(category, false));
-        });
+      const response = await fetch(url);
+      const result = [];
+      console.log(response);
+      const data = JSON.parse(response);
+      await Promise.all(data.map(async (item)=>{
+        const subUrl = `${config.apiHost}/countries/${iso}/look-alike-species-by-one?species_id=${item.species_id}&pop_id_origin=${item.pop_id_origin}`;
+        const parth = await fetch(subUrl);
+        result.push({
+          ...item,
+          ...JSON.parse(parth)[0]
+        })
+      }))
+      console.log(result);
+      dispatch({
+        type: GET_COUNTRIES_SIMILAR_SPECIES,
+        payload: { iso, data }
+      });
+      dispatch(setCountryPreload(category, false));
     } catch (err) {
       dispatch({
         type: GET_COUNTRIES_SIMILAR_SPECIES,
