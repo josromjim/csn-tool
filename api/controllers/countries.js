@@ -1,6 +1,6 @@
 const fs = require('fs');
 const normalizeSiteStatus = require('../helpers/index').normalizeSiteStatus;
-const { runQuery, saveFileSync, getQueryString, getQueryLookAlikeByOne } = require('../helpers');
+const { runQuery, saveFileSync, getQueryString } = require('../helpers');
 
 function getCountries(req, res) {
   const queryStr = getQueryString(req.query);
@@ -345,7 +345,6 @@ function getCountryPopsWithLookAlikeCounts(req, res) {
 }
 
 function getCountryPopsWithLookAlikeCountsByOne(req, res) {
-  const queryStr = getQueryString(req.query);
   const filePath = `public/json/countries/${req.params.iso}/look-alike-species-by-one${req.query.pop_id_origin}-${req.query.species_id}.json`;
   try {
     if (req.query.filter) throw new Error('have filter');
