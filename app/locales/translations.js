@@ -1,5 +1,5 @@
 const getLocale = new Promise((resolve,reject)=>{
-  fetch('http://localhost:3000/json/locales.json')
+  fetch(`${location.origin}/json/locales.json`)
     .then((response) => response.json())
     .then((data)=>resolve(data))
     .catch((err)=>console.log(err))

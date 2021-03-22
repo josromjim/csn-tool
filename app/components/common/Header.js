@@ -19,6 +19,7 @@ class Header extends React.Component {
         }
       ]
     };
+    this.onSelectChange = this.onSelectChange.bind(this);
   }
 
   componentDidMount() {
