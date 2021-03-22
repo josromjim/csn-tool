@@ -76,6 +76,5 @@ module.exports = {
   mergeNames,
   runQuery,
   saveFileSync,
-  getQueryString,
-  getQueryLookAlikeByOne
+  getQueryString
 };
