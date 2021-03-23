@@ -12,7 +12,6 @@ class SearchFilter extends React.Component {
       searchType: this.props.searchType || 'light'
     };
     this.debouncedChange = this.handleChange.bind(this);
-    this.filterClick = this.sendFilter.bind(this);
     this.timeout = null;
   }
 
@@ -25,13 +24,9 @@ class SearchFilter extends React.Component {
   handleChange(event) {
     const filter = event.target.value;
     this.setState({ search: filter });
-  }
-
-  sendFilter() {
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
-      this.props.setSearchFilter(this.state.search, this.props.router.location.query.filter);
-      if(this.props.changePage) this.props.changePage();
+      this.props.setSearchFilter(filter, this.props.router.location.query.filter);
     }, 400);
   }
 
@@ -51,7 +46,7 @@ class SearchFilter extends React.Component {
           onChange={this.debouncedChange}
           onKeyPress={this.props.onKeyPress}
         />
-        <svg className="icon icon-search" onClick={this.filterClick}>
+        <svg className="icon icon-search">
           <use xlinkHref="#icon-search"></use>
         </svg>
       </div>

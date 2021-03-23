@@ -67,18 +67,16 @@ class CountriesTable extends React.Component {
       this.props.selectCountriesTableItem(item);
     }
   }
-
+ 
   handlePageChange(pageNumber) {
     const pageSize = RESULTS_PER_TABLE_PAGE;
-    const { getCountryLookAlikeSpecies, country, searchFilter } = this.props;
+    const { getCountryLookAlikeSpecies, country } = this.props;
     const offset = (pageNumber - 1) * pageSize + 1;
-    console.log('111');
     getCountryLookAlikeSpecies(
       country,
-      searchFilter,
       {
-        offset,
-        limit: pageSize
+        offset: 0,
+        limit: 0
       }
     );
     this.setState({ activePage: pageNumber });
@@ -132,7 +130,7 @@ class CountriesTable extends React.Component {
             isLookAlike={isLookAlikeSpecies}
           />
         }
-        {isLookAlikeSpeciesPage && (
+        {/*isLookAlikeSpeciesPage && (
           <Pagination
             activePage={this.state.activePage}
             itemsCountPerPage={RESULTS_PER_TABLE_PAGE}
@@ -142,7 +140,7 @@ class CountriesTable extends React.Component {
             itemClass="page-item"
             linkClass="page-link"
           />
-        )}
+        )*/}
       </div>
     );
   }
