@@ -370,7 +370,6 @@ class TableListHeader extends React.Component {
           description={this.state.modalDescription}
         />
         {columnChunks.map((item, index) => {
-          console.log(item);
           let columnInner = null;
           let thisColWidth = colWidth;
           const style = {};

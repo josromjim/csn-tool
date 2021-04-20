@@ -4,9 +4,11 @@ import I18n from 'redux-i18n';
 import Header from 'containers/common/Header';
 import FeedbackForm from 'components/common/Feedback';
 import Footer from 'containers/common/Footer';
+import {setTranslations} from 'redux-i18n';
+import { connect } from 'react-redux';
 
 import { translations as translationsLoad } from 'locales/translations';
- 
+  
 class ContainerPage extends React.Component {
   constructor(props) {
     super(props);
@@ -14,16 +16,17 @@ class ContainerPage extends React.Component {
     translateObj[this.props.location.pathname.split('/')[0]] = {};
     this.state = {
       translations : translateObj
-    }
+    } 
   }
 
   componentDidMount() {
     translationsLoad
       .then((response)=>{
         this.setState({translations: response});
+        this.props.setTranslations(this.state.translations);
       })
   }
-
+ 
   getChildContext() {
     const location = this.props.location;
     location.params = this.props.params;
@@ -44,10 +47,10 @@ class ContainerPage extends React.Component {
       window.previousLocation = this.props.location;
     }
   }
-
+  //this.state.translations
   render() {
     return (
-      <I18n translations={this.state.translations} initialLang={this.props.params.lang}>
+      <I18n translations={{}} initialLang={this.props.params.lang} useReducer={true}>
         <div>
           <Header />
           <FeedbackForm />
@@ -60,7 +63,7 @@ class ContainerPage extends React.Component {
     );
   }
 }
-
+ 
 ContainerPage.childContextTypes = {
   location: PropTypes.object
 };
@@ -80,4 +83,12 @@ ContainerPage.propTypes = {
   location: PropTypes.object
 };
 
-export default ContainerPage;
+const mapStateToProps = (state) => ({});
+
+const mapDispatchToProps = (dispatch) => ({
+  setTranslations: (translations) => {
+    dispatch(setTranslations(translations));
+  }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ContainerPage);

@@ -2,18 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router';
 
-function NavLink(props, context) {
-  let search = props.router && props.router.location && props.router.location.search;
-  if (props.parent) {
-    search = '';
+class NavLink extends React.Component {
+  constructor(props, context) {
+    super(props);
   }
-  return (
-    <Link activeClassName="-current" className={props.className} to={`/${props.lang}${props.to}${search}`} onClick={(e) => e.stopPropagation()}>
-      {props.i18nText ? context.t(props.i18nText) : props.text}
-      {props.icon && <svg><use xlinkHref={`#${props.icon}`}></use></svg>}
-      {props.children}
-    </Link>
-  );
+  
+  render() {
+    let search = this.props.router && this.props.router.location && this.props.router.location.search;
+    if (this.props.parent) {
+      search = '';
+    }
+    return (
+      <Link activeClassName="-current" className={this.props.className} to={`/${this.props.lang}${this.props.to}${search}`} onClick={(e) => e.stopPropagation()}>
+        {this.props.i18nText ? this.context.t(this.props.i18nText) : this.props.text}
+        {this.props.icon && <svg><use xlinkHref={`#${this.props.icon}`}></use></svg>}
+        {this.props.children}
+      </Link>
+    );
+  }
 }
 
 NavLink.contextTypes = {

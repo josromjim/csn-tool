@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import CSVButton from 'components/tables/CSVButton.js';
 import NavLink from 'containers/common/NavLink';
 import CountriesSearch from 'containers/countries/CountriesSearch';
-
+ 
 function TableFilters(props) {
   return (
     <div className="row c-table-filters">
