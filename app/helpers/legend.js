@@ -1,7 +1,11 @@
 import { uniqueBy } from 'helpers/data';
-
+ 
 const PROTECTION_LEVELS_ORDER = ['Little/none', 'Some', 'Most', 'Whole', 'Unknown'];
 const HYDROLOGY_SECTIONS = [
+  /*{
+    name: 'Birdlife',
+    layer: 'birdlife',
+  },*/
   {
     name: 'Freshwater flow',
     layer: 'freshwaterFlow',
@@ -350,6 +354,17 @@ export function getAewaSections(layers) {
   ];
 }
 
+export function getBirdlifeSections(layers) {
+  const activeLayer = Object.keys(layers).filter(key => layers[key] && key === 'birdLife')[0];
+  return [
+    {
+      active: layers[activeLayer],
+      layer: 'birdLife',
+      name: 'Bird Life'
+    }
+  ];
+}
+
 export function getSitesSections(state) {
   const legend = [];
   const getLayers = state.layers || {};
@@ -379,8 +394,14 @@ export function getLegendData(state, { populations, populationColors }) {
   }
   // legend.push(...getHydrologySections(state.layers));
 
+  //BirdLife
+  if (state.layers.hasOwnProperty('birdLife')) {
+    legend.push(...getBirdlifeSections(state.layers));
+  }
+
   if (showClimateLayers) {
     legend = legend.concat(getSpeciesClimateLegendSection(state.layers));
   }
   return legend.filter(l => l);
 }
+ 

@@ -50,7 +50,8 @@ const initialState = {
     freshwaterFlow2050: false,
     inundationPresent: false,
     inundation2050: false,
-    aewaExtent: false
+    aewaExtent: false,
+    birdLife: false
   },
   sort: {
     field: '',

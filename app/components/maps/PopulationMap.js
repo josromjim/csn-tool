@@ -9,6 +9,7 @@ class PopulationMap extends BasicMap {
     super(props);
     this.setPopulationColors(props.populations);
     this.setAewaLayer = this.setAewaLayer.bind(this);
+    this.setBirdLifeLayer = this.setBirdLifeLayer.bind(this);
   }
 
   componentDidMount() {
@@ -23,6 +24,9 @@ class PopulationMap extends BasicMap {
     super.componentDidUpdate(prevProps, prevState);
     if (prevProps.layers.hasOwnProperty('aewaExtent') && prevProps.layers.aewaExtent !== this.props.layers.aewaExtent) {
       this.setAewaLayer();
+    }
+    if (prevProps.layers.hasOwnProperty('birdLife') && prevProps.layers.birdLife !== this.props.layers.birdLife) {
+      this.setBirdLifeLayer();
     }
   }
 
@@ -82,13 +86,49 @@ class PopulationMap extends BasicMap {
     }
 
     const geom = JSON.parse(data.rows[0].geom);
+    console.log('geom',geom);
     const layer = L.geoJSON(geom, {
       noWrap: true,
       style: SELECTED_AEWA_STYLE
     });
     layer.addTo(this.map);
     layer.bringToBack();
+    console.log(layer);
     this.selectedAewaLayer = layer;
+  }
+
+  setBirdLifeLayer() {
+    console.log('check0000')
+    if (!this.selectedBirdLifeLayer) {
+      const url = `${config.apiHost}/birdlife/shape`;
+      console.log(url);
+      fetch(url)
+      .then(response => response.json())
+      .then(this.addBirdLifeLayer.bind(this));
+    } else {
+      this.selectedBirdLifeLayer.remove(this.map);
+      this.selectedBirdLifeLayer = null;
+    }
+  }
+
+  addBirdLifeLayer(data) {
+    console.log('check1111');
+    console.log(data);
+    // layer not found, just set map view on selectedSite with default zoom
+    if (!data.length) {
+      this.map.setView([this.props.selectedSite.lat, this.props.selectedSite.lon], 8);
+      return;
+    }
+    const geom = data[0];
+    console.log(geom);
+    const layer = L.geoJSON(geom, {
+      noWrap: true,
+      style: SELECTED_AEWA_STYLE
+    });
+    layer.addTo(this.map);
+    layer.bringToBack();
+    this.selectedBirdLifeLayer = layer;
+    console.log(this.selectedBirdLifeLayer);
   }
 
   setPopulationColors(populations) {
