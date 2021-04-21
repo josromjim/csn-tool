@@ -1,7 +1,5 @@
 const fs = require('fs');
 const bbox = require('geojson-bbox');
-//var shapefile = require('shapefile-stream');
-//var through = require('through2');
 
 function getBirdlifeShape(req, res) {
   
@@ -25,20 +23,6 @@ function getBirdlifeShape(req, res) {
     res.status(err.statusCode || 500);
     res.json({ error: err.message });
   }
-  
- /*
-  let n = 0;
-  shapefile.createReadStream( 'public/shape/SpeciesRequest.shp' )
-    .pipe( through.obj( function( data, enc, next ){
-      console.log(
-        data
-      );
-      if (n < 5) {
-        next();
-      }
-      n++;
-    }));
-*/
 }
 
 module.exports = {
