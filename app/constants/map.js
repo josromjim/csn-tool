@@ -53,3 +53,14 @@ export const SELECTED_AEWA_STYLE = {
   fillColor: '#FCF0C5'
 };
 
+export const SELECTED_BIRDLIFE_STYLE = {
+  opacity: 0.5,
+  weight: 0,
+  dashArray: [1, 7],
+  lineCap: 'round',
+  color: 'white',
+  fill: true,
+  fillOpacity: 0.8,
+  fillColor: '#ff0000'
+};
+

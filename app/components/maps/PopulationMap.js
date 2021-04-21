@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
 import { getSqlQuery } from 'helpers/map';
-import { BOUNDARY_COLORS, SELECTED_AEWA_STYLE } from 'constants/map';
+import { BOUNDARY_COLORS, SELECTED_AEWA_STYLE, SELECTED_BIRDLIFE_STYLE } from 'constants/map';
 import BasicMap from './BasicMap';
 
 class PopulationMap extends BasicMap {
@@ -86,22 +86,24 @@ class PopulationMap extends BasicMap {
     }
 
     const geom = JSON.parse(data.rows[0].geom);
-    console.log('geom',geom);
     const layer = L.geoJSON(geom, {
       noWrap: true,
       style: SELECTED_AEWA_STYLE
     });
     layer.addTo(this.map);
     layer.bringToBack();
-    console.log(layer);
     this.selectedAewaLayer = layer;
   }
 
   setBirdLifeLayer() {
-    console.log('check0000')
     if (!this.selectedBirdLifeLayer) {
+/*      const query = `
+         SELECT ST_AsGeoJSON(the_geom, 15, 1) as geom
+         FROM aewa_extent_geo LIMIT 1
+       `; // asGeoJSON with options - add bbox for fitBound
+      getSqlQuery(query)
+        .then(this.addAewaLayer.bind(this));*/
       const url = `${config.apiHost}/birdlife/shape`;
-      console.log(url);
       fetch(url)
       .then(response => response.json())
       .then(this.addBirdLifeLayer.bind(this));
@@ -112,23 +114,22 @@ class PopulationMap extends BasicMap {
   }
 
   addBirdLifeLayer(data) {
-    console.log('check1111');
-    console.log(data);
     // layer not found, just set map view on selectedSite with default zoom
-    if (!data.length) {
+    /*if (!data.length) {
       this.map.setView([this.props.selectedSite.lat, this.props.selectedSite.lon], 8);
       return;
-    }
-    const geom = data[0];
-    console.log(geom);
+    }*/
+    //const geom = JSON.parse(data.rows[0].geom);
+
+    const geom = data;
+
     const layer = L.geoJSON(geom, {
       noWrap: true,
-      style: SELECTED_AEWA_STYLE
+      style: SELECTED_BIRDLIFE_STYLE
     });
     layer.addTo(this.map);
     layer.bringToBack();
     this.selectedBirdLifeLayer = layer;
-    console.log(this.selectedBirdLifeLayer);
   }
 
   setPopulationColors(populations) {
