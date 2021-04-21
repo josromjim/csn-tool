@@ -91,6 +91,7 @@ export function updateSitesDetailPage(actualState, replace, done) {
 
   if (site !== '') {
     dispatch(commonSetLayer('aewaExtent', false, setLayer));
+    dispatch(commonSetLayer('birdLife', false, setLayer));
   }
 
   dispatch(setSiteParams(site, cat, undefined, type));
