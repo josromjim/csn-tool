@@ -1,13 +1,12 @@
 const fs = require('fs');
 const bbox = require('geojson-bbox');
 
-function getBirdlifeShape(req, res) {
-  
+function getBirdlifeShape (req, res) {
   const filePathShape = 'public/json/birdlife/index.json';
   try {
     const data = fs.readFileSync(filePathShape);
     const poly = JSON.parse(data)[3];
-    const feature = { 
+    const feature = {
       type: 'Feature',
       geometry: poly
     };
