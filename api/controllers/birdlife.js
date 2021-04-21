@@ -1,7 +1,7 @@
 const fs = require('fs');
 const bbox = require('geojson-bbox');
 
-function getBirdlifeShape(res) {
+function getBirdlifeShape(req, res) {
   const filePathShape = 'public/json/birdlife/index.json';
   try {
     const data = fs.readFileSync(filePathShape);
