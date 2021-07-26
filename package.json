@@ -2,7 +2,8 @@
   "name": "csn-tool",
   "version": "1.0.0",
   "engines": {
-    "node": "12.x.x"
+    "node": "12.x.x",
+    "yarn": "1.19.1"
   },
   "description": "Critical Sites Network Tool 2.0",
   "main": "server.js",
