@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
 import { getSqlQuery } from 'helpers/map';
-import { BOUNDARY_COLORS, SELECTED_AEWA_STYLE, SELECTED_BIRDLIFE_STYLE } from 'constants/map';
+import { BOUNDARY_COLORS, SELECTED_AEWA_STYLE, SELECTED_BIRDLIFE_STYLE, getBirdLifeStyle } from 'constants/map';
 import BasicMap from './BasicMap';
 
 class PopulationMap extends BasicMap {
@@ -25,7 +25,8 @@ class PopulationMap extends BasicMap {
     if (prevProps.layers.hasOwnProperty('aewaExtent') && prevProps.layers.aewaExtent !== this.props.layers.aewaExtent) {
       this.setAewaLayer();
     }
-    if (prevProps.layers.hasOwnProperty('birdLife') && prevProps.layers.birdLife !== this.props.layers.birdLife) {
+    // if (prevProps.layers.hasOwnProperty('birdLife') && prevProps.layers.birdLife !== this.props.layers.birdLife || prevProps.birdlife !== this.props.birdlife) {
+    if (prevProps.layers.hasOwnProperty('birdLife') && prevProps.birdlife !== this.props.birdlife) {
       this.setBirdLifeLayer();
     }
   }
@@ -96,40 +97,38 @@ class PopulationMap extends BasicMap {
   }
 
   setBirdLifeLayer() {
-    if (!this.selectedBirdLifeLayer) {
-/*      const query = `
-         SELECT ST_AsGeoJSON(the_geom, 15, 1) as geom
-         FROM aewa_extent_geo LIMIT 1
-       `; // asGeoJSON with options - add bbox for fitBound
-      getSqlQuery(query)
-        .then(this.addAewaLayer.bind(this));*/
-      const url = `${config.apiHost}/birdlife/shape`;
-      fetch(url)
-      .then(response => response.json())
-      .then(this.addBirdLifeLayer.bind(this));
+    if (!this.selectedBirdLifeLayer || this.selectedBirdLifeLayer.length === 0) {
+      // asGeoJSON with options - add bbox for fitBound
+      this.addBirdLifeLayer();
     } else {
-      this.selectedBirdLifeLayer.remove(this.map);
-      this.selectedBirdLifeLayer = null;
+      this.clearBirdlife();
     }
   }
 
-  addBirdLifeLayer(data) {
-    // layer not found, just set map view on selectedSite with default zoom
-    /*if (!data.length) {
-      this.map.setView([this.props.selectedSite.lat, this.props.selectedSite.lon], 8);
-      return;
-    }*/
-    //const geom = JSON.parse(data.rows[0].geom);
+  addBirdLifeLayer() {
+    this.selectedBirdLifeLayer = [];
+    const arr = this.props.birdlife || [];
+    arr.map((d, n) => {
+      const { bbox, coordinates, type, color } = d;
+      const geom = { bbox, coordinates, type };
+      const style = getBirdLifeStyle(n);
+      style.fillColor = color;
+      const layer = L.geoJSON(geom, {
+        noWrap: true,
+        style,
+      });
+      layer.addTo(this.map);
+      layer.bringToBack();
+      this.selectedBirdLifeLayer.push(layer);
+    })
+  }
 
-    const geom = data;
-
-    const layer = L.geoJSON(geom, {
-      noWrap: true,
-      style: SELECTED_BIRDLIFE_STYLE
-    });
-    layer.addTo(this.map);
-    layer.bringToBack();
-    this.selectedBirdLifeLayer = layer;
+  clearBirdlife() {
+    if (!this.selectedBirdLifeLayer || this.selectedBirdLifeLayer.length === 0) return;
+    this.selectedBirdLifeLayer.forEach(l => {
+      l.remove(this.map);
+    })
+    this.selectedBirdLifeLayer = null;
   }
 
   setPopulationColors(populations) {
@@ -217,7 +216,9 @@ class PopulationMap extends BasicMap {
 PopulationMap.propTypes = {
   ...BasicMap.propTypes,
   populations: PropTypes.any,
+  birdlife: PropTypes.any,
   selectedPopulationId: PropTypes.number,
+  id: PropTypes.number, // species ID
   fitToPopulationBoudaries: PropTypes.bool,
   fitToPopulationId: PropTypes.number
 };

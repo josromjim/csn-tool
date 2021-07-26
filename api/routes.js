@@ -5,7 +5,6 @@ const SpeciesCtrl = require('./controllers/species');
 const ThresholdCtrl = require('./controllers/threshold');
 const SearchCtrl = require('./controllers/search');
 const TablesCtrl = require('./controllers/tables');
-const BirdlifeCtrl = require('./controllers/birdlife');
 
 const router = Express.Router(); // eslint-disable-line new-cap
 
@@ -15,9 +14,6 @@ router.route('/locales/import-from-sheet').get(TablesCtrl.importFromSheet);
 
 // Carto data update
 router.route('/carto/populations').get(TablesCtrl.importTrendSizeMethods);
-
-// Birdlife
-router.route('/birdlife/shape').get(BirdlifeCtrl.getBirdlifeShape);
 
 // Countries
 router.route('/countries').get(CountriesCtrl.getCountries);
@@ -46,6 +42,7 @@ router.route('/species/:id/sites').get(SpeciesCtrl.getSpeciesSites);
 router.route('/species/:id/seasons').get(SpeciesCtrl.getSpeciesSeasons);
 router.route('/species/:id/criticalSites').get(SpeciesCtrl.getSpeciesCriticalSites);
 router.route('/species/:id/population').get(SpeciesCtrl.getSpeciesPopulation);
+router.route('/species/:id/birdlife').get(SpeciesCtrl.getSpeciesBirdlife);
 router.route('/species/:id/look-alike-species').get(SpeciesCtrl.getSpeciesLookAlikeSpecies);
 router.route('/species/:id/look-alike-species/:populationId').get(SpeciesCtrl.getPopulationsLookAlikeSpecies);
 router.route('/species/:id/population-vulnerability').get(SpeciesCtrl.getPopulationVulnerability);
