@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "engines": {
     "node": "12.x.x",
-    "yarn": "1.19.1"
+    "yarn": "1.21.1"
   },
   "description": "Critical Sites Network Tool 2.0",
   "main": "server.js",
