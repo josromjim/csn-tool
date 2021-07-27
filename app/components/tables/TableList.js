@@ -147,6 +147,30 @@ function TableList(props, context) {
                 <span className={`flag ${item.iso2 && (item.iso2).toLowerCase()}`}></span>
                 <div className={`text ${column} ${alignClass}`} dangerouslySetInnerHTML={{ __html: item[column] }} ></div>
               </div>);
+            } else if (column === 'size_method' || column === 'trend_method') {
+              return (<div style={{ width: `${colWidth}%`, textAlign: 'center' }}>
+                <div
+                  key={index}
+                  className={`text -title popup`}
+                  style={{
+                    width: `${colWidth}%`,
+                    cursor: 'auto', 
+                  }}
+                  title={ context.t(`code_${item[column]}`) }
+                >
+                  <span className="popup">
+                    <div className="popup-content">
+                      <h3 className="popup-content-title">
+                        { context.t(column) }
+                      </h3>
+                      <div className="popup-content-description">
+                        { context.t(`code_${item[column]}`) }
+                      </div>
+                    </div>
+                  </span>
+                  <div className={`text ${column} ${alignClass}`} dangerouslySetInnerHTML={{ __html: item[column] }} ></div>
+                </div>
+              </div>);
             }
             const colVal = (typeof item[column] === 'number' && numbersAsText.indexOf(column) === -1) ? numberToThousands(item[column]) : item[column];
             return (<div key={index2} className={`text ${column} ${alignClass}`} style={{ width: `${colWidth}%` }} dangerouslySetInnerHTML={{ __html: colVal }}></div>);

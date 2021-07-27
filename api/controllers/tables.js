@@ -153,7 +153,8 @@ const importTrendSizeMethods = async (req, res) => {
       arr.push(query);
     });
 
-    res.json({ data: arr });
+
+    res.json({ data: arr, str: arr.join('') });
   } catch (err) {
     res.status(err.statusCode || 500);
     res.json({ error: err.message });
