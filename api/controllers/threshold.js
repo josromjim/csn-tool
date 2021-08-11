@@ -1,21 +1,19 @@
-const fs = require('fs');
-const { runQuery, saveFileSync, getQueryString } = require('../helpers');
+const { runQuery, getQueryString } = require('../helpers');
 const cache = require('../helpers/cache');
 
 async function getSpeciesByPosition(req, res) {
   // TO include the geom
   // SELECT ST_AsGeoJSON(p.the_geom)
   const queryStr = getQueryString(req.query);
-  const filePath = `public/json/threshold/${req.params.lat}/${req.params.lng}/${req.params.zoom}${queryStr}.json`;
   const cacheKey = `threshold/${req.params.lat}/${req.params.lng}/${req.params.zoom}${queryStr}.json`;
 
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error)
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value));
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     const query = `SELECT
       p.species_main_id AS id,

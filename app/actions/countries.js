@@ -219,7 +219,6 @@ export function getCountryLookAlikeSpecies(iso, params = { offset: 0, limit: 10 
           }
         });
     } catch (err) {
-      console.log('startErr',err);
       dispatch({
         type: GET_COUNTRIES_SIMILAR_SPECIES,
         payload: { iso, data: [] }

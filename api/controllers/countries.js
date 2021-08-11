@@ -6,12 +6,12 @@ async function getCountries(req, res) {
   const queryStr = getQueryString(req.query);
   const cacheKey = `countries${queryStr}`;
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error);
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value));
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     const query = 'SELECT * FROM countries';
     runQuery(query)
@@ -25,7 +25,6 @@ async function getCountries(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
-    
   } catch (err) {
     res.status(err.statusCode || 500);
     res.json({ error: err.message });
@@ -37,12 +36,12 @@ async function getCountryDetails(req, res) {
   const cacheKey = `countries/${req.params.iso}/index${queryStr}`;
 
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error);
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value));
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
 
     const query = `SELECT * FROM countries WHERE iso3='${req.params.iso}'`;
@@ -73,12 +72,12 @@ async function getCountrySites(req, res) {
   const cacheKey = `countries/${req.params.iso}/cities${queryStr}`;
 
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error);
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value));
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     const query = `with stc as (select site_id,
       SUM(case when iba_criteria = '' then 0 else 1 end) as iba
@@ -131,12 +130,12 @@ async function getCountryCriticalSites(req, res) {
   const cacheKey = `countries/${req.params.iso}/criticalSites${queryStr}`;
 
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error);
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value));
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     const query = `
       WITH csn_species_count AS (
@@ -189,12 +188,12 @@ async function getCountrySpecies(req, res) {
   const cacheKey = `countries/${req.params.iso}/species${queryStr}`;
 
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error);
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value));
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     const query = `SELECT s.scientific_name, s.english_name, s.french_name, s.genus, s.family,
       s.species_id as id, string_agg(p.population_name, ', ') as populations, s.hyperlink,
@@ -227,14 +226,13 @@ async function getCountrySpecies(req, res) {
 async function getCountryPopulations(req, res) {
   const queryStr = getQueryString(req.query);
   const cacheKey = `countries/${req.params.iso}/populations${queryStr}`;
-  
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error);
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value));
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     const query = `SELECT
       s.scientific_name,
@@ -263,17 +261,17 @@ async function getCountryPopulations(req, res) {
     ORDER BY s.taxonomic_sequence
   `;
 
-  runQuery(query)
-    .then(async (data) => {
-      const result = JSON.parse(data).rows || [];
-      const jsonData = JSON.stringify(result);
-      await cache.add(cacheKey, jsonData);
-      res.json(result);
-    })
-    .catch((err) => {
-      res.status(err.statusCode || 500);
-      res.json({ error: err.message });
-    });
+    runQuery(query)
+      .then(async (data) => {
+        const result = JSON.parse(data).rows || [];
+        const jsonData = JSON.stringify(result);
+        await cache.add(cacheKey, jsonData);
+        res.json(result);
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
+      });
   } catch (err) {
     res.status(err.statusCode || 500);
     res.json({ error: err.message });
@@ -285,13 +283,13 @@ async function getCountryWithLookAlikeCounts(req, res) {
   const cacheKey = `countries/${req.params.iso}/look-alike-species-count${queryStr}`;
   try {
     if (!req.query.filter) {
-      const data = await cache.get(cacheKey);
+      const dataCache = await cache.get(cacheKey);
 
-      if (data.status === 'fail') {
-        throw new Error(data.error);
+      if (dataCache.status === 'fail') {
+        throw new Error(dataCache.error);
       }
-      if (data.status === 'success' && data.value !== null) {
-        return res.json(JSON.parse(data.value)); 
+      if (dataCache.status === 'success' && dataCache.value !== null) {
+        return res.json(JSON.parse(dataCache.value));
       }
     }
     const query = `
@@ -340,7 +338,6 @@ async function getCountryWithLookAlikeCounts(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
-
   } catch (err) {
     res.status(err.statusCode || 500);
     res.json({ error: err.message });
@@ -353,13 +350,13 @@ async function getCountryPopsWithLookAlikeCounts(req, res) {
 
   try {
     if (!req.query.filter) {
-      const data = await cache.get(cacheKey);
+      const dataCache = await cache.get(cacheKey);
 
-      if (data.status === 'fail') {
-        throw new Error(data.error);
+      if (dataCache.status === 'fail') {
+        throw new Error(dataCache.error);
       }
-      if (data.status === 'success' && data.value !== null) {
-        return res.json(JSON.parse(data.value)); 
+      if (dataCache.status === 'success' && dataCache.value !== null) {
+        return res.json(JSON.parse(dataCache.value));
       }
     }
     const query = `SELECT 
@@ -420,13 +417,13 @@ async function getCountryPopsWithLookAlikeCountsByOne(req, res) {
 
   try {
     if (!req.query.filter) {
-      const data = await cache.get(cacheKey);
+      const dataCache = await cache.get(cacheKey);
 
-      if (data.status === 'fail') {
-        throw new Error(data.error);
+      if (dataCache.status === 'fail') {
+        throw new Error(dataCache.error);
       }
-      if (data.status === 'success' && data.value !== null) {
-        return res.json(JSON.parse(data.value)); 
+      if (dataCache.status === 'success' && dataCache.value !== null) {
+        return res.json(JSON.parse(dataCache.value));
       }
     }
     const query = `SELECT
@@ -503,12 +500,12 @@ async function getCountryLookAlikeSpecies(req, res) {
   const cacheKey = `countries/${req.params.iso}/look-alike-species/${req.params.populationId}${queryStr}`;
 
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error);
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value)); 
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     const query = `
       SELECT
@@ -590,12 +587,12 @@ async function getTriggerSpeciesSuitability(req, res) {
   const cacheKey = `countries/${req.params.iso}/trigger-suitability${queryStr}`;
 
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error);
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value)); 
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     const query = `SELECT t2a.populationname AS population_name,
       t2a.species_c_254 AS species,

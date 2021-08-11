@@ -45,26 +45,25 @@ const remove = async (key) => {
     res.error = ex;
   }
   return res;
-}
+};
 
 const clearAll = async () => {
   const res = {
-    key,
     status: ''
   };
   try {
-    await CacheModel.destroy({ where: { key } });
+    await CacheModel.destroy({ truncate: true });
     res.status = 'success';
   } catch (ex) {
     res.status = 'fail';
     res.error = ex;
   }
   return res;
-}
+};
 
 module.exports = {
   add,
   remove,
   clearAll,
-  get,
+  get
 };

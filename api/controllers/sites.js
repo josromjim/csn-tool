@@ -9,21 +9,21 @@ async function getSites(req, res) {
     const table = req.query.filter === 'iba' ? 'sites_iba' : 'sites_critical';
     const results = req.query.results || RESULTS_PER_PAGE;
     const search = req.query.search
-    ? `${
-      req.query.filter === 'iba' ? 'AND' : 'WHERE'
-    } UPPER(s.country) like UPPER('%${req.query.search}%')
-    OR UPPER(s.site_name) like UPPER('%${req.query.search}%')
-    OR UPPER(s.protection_status) like UPPER('%${req.query.search}%')
-    OR UPPER(s.csn) like UPPER('%${req.query.search}%')
-    OR UPPER(s.iba) like UPPER('%${req.query.search}%')`
-    : '';
+      ? `${
+        req.query.filter === 'iba' ? 'AND' : 'WHERE'
+      } UPPER(s.country) like UPPER('%${req.query.search}%')
+      OR UPPER(s.site_name) like UPPER('%${req.query.search}%')
+      OR UPPER(s.protection_status) like UPPER('%${req.query.search}%')
+      OR UPPER(s.csn) like UPPER('%${req.query.search}%')
+      OR UPPER(s.iba) like UPPER('%${req.query.search}%')`
+      : '';
     const cacheKey = `cites-${table}-${search}${queryStr}`;
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error)
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value));
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     let query;
     if (req.query.filter === 'iba') {
@@ -108,12 +108,12 @@ async function getSitesDetails(req, res) {
   const cacheKey = `cites/${req.params.type}/${req.params.id}/index${queryStr}`;
 
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error)
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value));
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     let query;
     if (req.params.type === 'iba') {
@@ -197,12 +197,12 @@ async function getSitesLocations(req, res) {
   const cacheKey = `cites/locations/${req.params.type}/index${queryStr}`;
 
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error)
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value));
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     let query;
     if (req.params.type === 'csn') {
@@ -240,12 +240,12 @@ async function getSitesSpecies(req, res) {
   const cacheKey = `cites/${req.params.type}/${req.params.id}/species${queryStr}`;
 
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error)
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value));
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     let query;
     if (req.params.type === 'iba') {
@@ -332,12 +332,12 @@ async function getSitesVulnerability(req, res) {
   const cacheKey = `cites/csn/${req.params.id}/vulnerability${queryStr}`;
 
   try {
-    const data = await cache.get(cacheKey);
-    if (data.status === 'fail') {
-      throw new Error(data.error)
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
     }
-    if (data.status === 'success' && data.value !== null) {
-      return res.json(JSON.parse(data.value));
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
     }
     const query = `SELECT species.species_id AS id, species.scientific_name, species.english_name,
       t2a.season, t2a.current_suitability, t2a.future_suitability,

@@ -9,7 +9,7 @@ const mapStateToProps = (state) => {
   const data = state.species.list;
 
   return {
-    data: filterData({ data, columns, filter }),
+    data: filterData({ data, columns, filter }) || [],
     columns,
     allColumns: filterColumnsBasedOnLanguage(state.species.allColumns, state.i18nState.lang)
   };
