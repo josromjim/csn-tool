@@ -88,7 +88,7 @@ class SitesMap extends BasicMap {
           style: SELECTED_AEWA_STYLE
         });
         layer.addTo(this.map);
-        layer.bringToBack();
+        // layer.bringToBack();
         this.selectedAewaLayer = layer;
       });
   }

@@ -18,6 +18,9 @@ class PopulationMap extends BasicMap {
     pane.classList.add('-layer-blending');
     this.populationLayerGroup = L.layerGroup();
     this.populationLayerGroup.addTo(this.map);
+    if (this.props.layers.aewaExtent && !this.selectedAewaLayer) {
+      this.setAewaLayer();
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -25,6 +28,7 @@ class PopulationMap extends BasicMap {
     if (prevProps.layers.hasOwnProperty('aewaExtent') && prevProps.layers.aewaExtent !== this.props.layers.aewaExtent) {
       this.setAewaLayer();
     }
+
     // if (prevProps.layers.hasOwnProperty('birdLife') && prevProps.layers.birdLife !== this.props.layers.birdLife || prevProps.birdlife !== this.props.birdlife) {
     if (prevProps.layers.hasOwnProperty('birdLife') && prevProps.birdlife !== this.props.birdlife) {
       this.setBirdLifeLayer();
@@ -65,6 +69,12 @@ class PopulationMap extends BasicMap {
     }
   }
 
+  aewaLayerToFront() {
+    if (this.selectedAewaLayer) {
+      this.selectedAewaLayer.bringToFront();
+    }
+  };
+
   setAewaLayer() {
     if (!this.selectedAewaLayer) {
       const query = `
@@ -73,6 +83,7 @@ class PopulationMap extends BasicMap {
        `; // asGeoJSON with options - add bbox for fitBound
       getSqlQuery(query)
         .then(this.addAewaLayer.bind(this));
+      
     } else {
       this.selectedAewaLayer.remove(this.map);
       this.selectedAewaLayer = null;
@@ -85,14 +96,13 @@ class PopulationMap extends BasicMap {
       this.map.setView([this.props.selectedSite.lat, this.props.selectedSite.lon], 8);
       return;
     }
-
+    
     const geom = JSON.parse(data.rows[0].geom);
     const layer = L.geoJSON(geom, {
       noWrap: true,
-      style: SELECTED_AEWA_STYLE
+      style: { ...SELECTED_AEWA_STYLE }
     });
     layer.addTo(this.map);
-    layer.bringToBack();
     this.selectedAewaLayer = layer;
   }
 
@@ -118,7 +128,6 @@ class PopulationMap extends BasicMap {
         style,
       });
       layer.addTo(this.map);
-      layer.bringToBack();
       this.selectedBirdLifeLayer.push(layer);
     })
   }

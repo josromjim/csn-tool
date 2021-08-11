@@ -57,14 +57,15 @@ export const BIRDLIFE_COLORS = [
 
 // aewa styles
 export const SELECTED_AEWA_STYLE = {
-  opacity: 0.5,
-  weight: 0,
+  opacity: 0.1,
+  weight: 3,
   dashArray: [1, 7],
   lineCap: 'round',
   color: 'white',
   fill: true,
-  fillOpacity: 0.5,
-  fillColor: '#FCF0C5'
+  fillOpacity: '0.5',
+  fillColor: '#FCF0C5',
+  interactive: false
 };
 
 export const SELECTED_BIRDLIFE_STYLE = {
@@ -75,7 +76,8 @@ export const SELECTED_BIRDLIFE_STYLE = {
   color: 'white',
   fill: true,
   fillOpacity: 0.5,
-  fillColor: '#ff0000'
+  fillColor: '#ff0000',
+  interactive: false
 };
 
 export const getBirdLifeStyle = (n) => {

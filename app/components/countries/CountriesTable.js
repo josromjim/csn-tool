@@ -105,7 +105,6 @@ class CountriesTable extends React.Component {
     const isLookAlikeSpecies = category.startsWith('lookAlikeSpecies');
     const isLookAlikeSpeciesPage = category === 'lookAlikeSpecies';
     const isExpanded = !!(isLookAlikeSpecies && selectedLASpeciesPopulation);
-    console.log(preload);
     const isPreload = preload[category];
     const count = tableCounts ? tableCounts[category] : 0;
 

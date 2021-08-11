@@ -51,7 +51,7 @@ class ClimateMap extends PopulationMap {
         }
       });
     });
-
+    
     frontLayers.map(fl => fl.bringToFront());
   }
 

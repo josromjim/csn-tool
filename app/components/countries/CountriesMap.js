@@ -59,7 +59,9 @@ class CountriesMap extends PopulationMap {
     super.componentWillReceiveProps(newProps);
 
     this.setActiveLayer();
+    // if (newProps.geoms !== this.props.geoms || newProps.countries !== this.props.countries || newProps.searchFilter !== this.props.searchFilter) {
     this.drawGeo(newProps.geoms, newProps.countries, newProps.searchFilter);
+    // }
 
     if (newProps.country && newProps.router.location.search === '') {
       this.fitBounds(this.activeLayer);
@@ -90,9 +92,6 @@ class CountriesMap extends PopulationMap {
 
   componentDidUpdate(prevProps, prevState) {
     super.componentDidUpdate(prevProps, prevState);
-    // if (prevProps.layers.hasOwnProperty('aewaExtent') && prevProps.layers.aewaExtent !== this.props.layers.aewaExtent) {
-    //   this.setAewaLayer();
-    // }
     if (this.state.selectedBaseLayer !== prevState.selectedBaseLayer) {
       this.drawGeo(this.props.geoms, this.props.countries, this.props.searchFilter);
     }
@@ -188,6 +187,7 @@ class CountriesMap extends PopulationMap {
     this.topoLayer.clearLayers();
     this.topoLayer.addData(geo);
     this.topoLayer.addTo(this.map);
+    this.aewaLayerToFront();
     this.topoLayer.eachLayer(onEachFeature);
   }
 
