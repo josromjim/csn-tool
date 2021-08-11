@@ -51,10 +51,16 @@ class SpeciesDetailTable extends React.Component {
     }
   }
 
-  getLoading() {
+  getLoading(category = '') {
+    const preloadTextCategories = ['populations', 'lookAlikeSpecies'];
     return (
       <div className="table-loading">
         <LoadingSpinner inner />
+        {preloadTextCategories.includes(category) && (
+          <div className="loading-text">
+            {this.context.t('loading_cache_message')}
+          </div>
+        )}
       </div>
     );
   }

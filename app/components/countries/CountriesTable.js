@@ -54,10 +54,16 @@ class CountriesTable extends React.Component {
     }
   }
 
-  getLoading() {
+  getLoading(category = '') {
+    const preloadTextCategories = ['populations', 'lookAlikeSpecies'];
     return (
       <div className="table-loading">
         <LoadingSpinner inner />
+        {preloadTextCategories.includes(category) && (
+          <div className="loading-text">
+            {this.context.t('loading_cache_message')}
+          </div>
+        )}
       </div>
     );
   }
@@ -99,6 +105,7 @@ class CountriesTable extends React.Component {
     const isLookAlikeSpecies = category.startsWith('lookAlikeSpecies');
     const isLookAlikeSpeciesPage = category === 'lookAlikeSpecies';
     const isExpanded = !!(isLookAlikeSpecies && selectedLASpeciesPopulation);
+    console.log(preload);
     const isPreload = preload[category];
     const count = tableCounts ? tableCounts[category] : 0;
 
@@ -119,7 +126,7 @@ class CountriesTable extends React.Component {
           />
         </Sticky>
         {isPreload
-          ? this.getLoading()
+          ? this.getLoading(category)
           : <TableList
             data={data}
             columns={columns}
@@ -130,17 +137,6 @@ class CountriesTable extends React.Component {
             isLookAlike={isLookAlikeSpecies}
           />
         }
-        {/*isLookAlikeSpeciesPage && (
-          <Pagination
-            activePage={this.state.activePage}
-            itemsCountPerPage={RESULTS_PER_TABLE_PAGE}
-            totalItemsCount={count}
-            pageRangeDisplayed={5}
-            onChange={this.handlePageChange}
-            itemClass="page-item"
-            linkClass="page-link"
-          />
-        )*/}
       </div>
     );
   }
