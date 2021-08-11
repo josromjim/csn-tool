@@ -357,15 +357,16 @@ export function getBirdlifeSections(layers, birdlife, selected) {
   let items = []
   if (birdlife) {
     const seasons = {
-      1: 'Spring',
-      2: 'Winter',
-      3: 'Summer',
-      4: 'Autumn',
+      1: 'Resident',
+      2: 'Breeding Season',
+      3: 'Non-breeding Season',
+      4: 'Passage',
+      5: 'Seasonal Occurrence Uncertain',
     };
     items = (birdlife || []).map((l, n) => ({
       icon: 'circle',
       id: l.id,
-      name: `${seasons[l.seasonal]} - ${l.source}`,
+      name: `${seasons[l.seasonal]}`,
       color: l.color,
     }));
   }
