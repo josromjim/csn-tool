@@ -5,8 +5,11 @@ const SpeciesCtrl = require('./controllers/species');
 const ThresholdCtrl = require('./controllers/threshold');
 const SearchCtrl = require('./controllers/search');
 const TablesCtrl = require('./controllers/tables');
-
+const CacheCtrl = require('./controllers/cache');
 const router = Express.Router(); // eslint-disable-line new-cap
+
+// cache
+router.route('/cache/clear').get(CacheCtrl.clearCache);
 
 // Google tables
 router.route('/locales/import-from-js').get(TablesCtrl.importFromJs);
