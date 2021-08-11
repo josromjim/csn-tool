@@ -2,10 +2,6 @@ import { uniqueBy } from 'helpers/data';
 
 const PROTECTION_LEVELS_ORDER = ['Little/none', 'Some', 'Most', 'Whole', 'Unknown'];
 const HYDROLOGY_SECTIONS = [
-  /*{
-    name: 'Birdlife',
-    layer: 'birdlife',
-  },*/
   {
     name: 'Freshwater flow',
     layer: 'freshwaterFlow',
@@ -360,10 +356,16 @@ export function getBirdlifeSections(layers, birdlife, selected) {
 
   let items = []
   if (birdlife) {
+    const seasons = {
+      1: 'Spring',
+      2: 'Winter',
+      3: 'Summer',
+      4: 'Autumn',
+    };
     items = (birdlife || []).map((l, n) => ({
       icon: 'circle',
       id: l.id,
-      name: l.source  ,
+      name: `${seasons[l.seasonal]} - ${l.source}`,
       color: l.color,
     }));
   }

@@ -214,7 +214,9 @@ function getCountryPopulations(req, res) {
     WHERE (
       ST_Intersects(pi.the_geom,(SELECT the_geom FROM world_borders WHERE iso3 = '${req.params.iso}'))
     )
+    ORDER BY s.taxonomic_sequence
     `;
+
     runQuery(query)
       .then((data) => {
         const result = JSON.parse(data).rows || [];
@@ -233,7 +235,7 @@ function getCountryWithLookAlikeCounts(req, res) {
   const queryStr = getQueryString(req.query);
   const filePath = `public/json/countries/${req.params.iso}/look-alike-species-count${queryStr}.json`;
   try {
-    if (req.query.filter) throw new Error('have filter');
+    if (req.query.filter) throw 'filter';
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
   } catch (errRead) {

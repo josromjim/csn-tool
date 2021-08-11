@@ -520,6 +520,7 @@ async function getSpeciesBirdlife(req, res) {
         id: p.id,
         citation: p.citation,
         source: p.source,
+        seasonal: p.seasonal,
         ...p.geometry,
         ...{
           bbox: extent
