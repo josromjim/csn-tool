@@ -1,15 +1,22 @@
 const fs = require('fs');
 const { runQuery, saveFileSync, getQueryString } = require('../helpers');
+const cache = require('../helpers/cache');
 
-function getSpeciesByPosition(req, res) {
+async function getSpeciesByPosition(req, res) {
   // TO include the geom
   // SELECT ST_AsGeoJSON(p.the_geom)
   const queryStr = getQueryString(req.query);
   const filePath = `public/json/threshold/${req.params.lat}/${req.params.lng}/${req.params.zoom}${queryStr}.json`;
+  const cacheKey = `threshold/${req.params.lat}/${req.params.lng}/${req.params.zoom}${queryStr}.json`;
+
   try {
-    const data = fs.readFileSync(filePath);
-    res.json(JSON.parse(data));
-  } catch (errRead) {
+    const data = await cache.get(cacheKey);
+    if (data.status === 'fail') {
+      throw new Error(data.error)
+    }
+    if (data.status === 'success' && data.value !== null) {
+      return res.json(JSON.parse(data.value));
+    }
     const query = `SELECT
       p.species_main_id AS id,
       p.scientificname AS scientific_name,
@@ -32,11 +39,11 @@ function getSpeciesByPosition(req, res) {
       AND sc.country_status != 'Vagrant'
       ORDER BY sm.taxonomic_sequence ASC`;
     runQuery(query)
-      .then((data) => {
+      .then(async (data) => {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           const jsonData = JSON.stringify(results);
-          saveFileSync(filePath, jsonData);
+          await cache.add(cacheKey, jsonData);
           res.json(results);
         } else {
           res.status(404);
@@ -47,6 +54,9 @@ function getSpeciesByPosition(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
   }
 }
 

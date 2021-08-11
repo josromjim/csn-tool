@@ -1,27 +1,32 @@
-const fs = require('fs');
 const normalizeSiteStatus = require('../helpers/index').normalizeSiteStatus;
 const mergeNames = require('../helpers/index').mergeNames;
-const { runQuery, saveFileSync, getQueryString } = require('../helpers');
+const { runQuery, getQueryString } = require('../helpers');
 const { BirdLife } = require('../db/postgres/models');
 const bbox = require('geojson-bbox');
+const cache = require('../helpers/cache');
 
-function getSpeciesList(req, res) {
+async function getSpeciesList(req, res) {
   const queryStr = getQueryString(req.query);
-  const filePath = `public/json/species${queryStr}.json`;
+  const cacheKey = `species${queryStr}`;
+
   try {
-    const data = fs.readFileSync(filePath);
-    res.json(JSON.parse(data));
-  } catch (errRead) {
+    const data = await cache.get(cacheKey);
+    if (data.status === 'fail') {
+      throw new Error(data.error)
+    }
+    if (data.status === 'success' && data.value !== null) {
+      return res.json(JSON.parse(data.value));
+    }
     const query = `SELECT s.scientific_name, s.english_name, s.french_name, s.genus, s.family,
     s.species_id as id, s.hyperlink, s.iucn_category, aewa_annex_2
     FROM species s
     ORDER BY s.taxonomic_sequence`;
     runQuery(query)
-      .then((data) => {
+      .then(async (data) => {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           const jsonData = JSON.stringify(results);
-          saveFileSync(filePath, jsonData);
+          await cache.add(cacheKey, jsonData);
           res.json(results);
         } else {
           res.status(404);
@@ -32,23 +37,31 @@ function getSpeciesList(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
   }
 }
 
-function getSpeciesDetails(req, res) {
+async function getSpeciesDetails(req, res) {
   const queryStr = getQueryString(req.query);
-  const filePath = `public/json/species/${req.params.id}/index${queryStr}.json`;
+  const cacheKey = `species/${req.params.id}/index${queryStr}`;
+
   try {
-    const data = fs.readFileSync(filePath);
-    res.json(JSON.parse(data));
-  } catch (errRead) {
+    const data = await cache.get(cacheKey);
+    if (data.status === 'fail') {
+      throw new Error(data.error)
+    }
+    if (data.status === 'success' && data.value !== null) {
+      return res.json(JSON.parse(data.value));
+    }
     const query = `SELECT s.scientific_name, s.english_name, s.french_name, s.family,
-    s.species_id as id, s.iucn_category, s.hyperlink
-    FROM species s
-    WHERE s.species_id = ${req.params.id}
+      s.species_id as id, s.iucn_category, s.hyperlink
+      FROM species s
+      WHERE s.species_id = ${req.params.id}
     `;
     runQuery(query)
-      .then((data) => {
+      .then(async (data) => {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           const row = results[0];
@@ -66,7 +79,7 @@ function getSpeciesDetails(req, res) {
             ]
           };
           const jsonData = JSON.stringify(result);
-          saveFileSync(filePath, jsonData);
+          await cache.add(cacheKey, jsonData);
           res.json(result);
         } else {
           res.status(404);
@@ -77,16 +90,24 @@ function getSpeciesDetails(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
   }
 }
 
-function getSpeciesSites(req, res) {
+async function getSpeciesSites(req, res) {
   const queryStr = getQueryString(req.query);
-  const filePath = `public/json/species/${req.params.id}/sites${queryStr}.json`;
+  const cacheKey = `species/${req.params.id}/sites${queryStr}`;
+
   try {
-    const data = fs.readFileSync(filePath);
-    res.json(JSON.parse(data));
-  } catch (errRead) {
+    const data = await cache.get(cacheKey);
+    if (data.status === 'fail') {
+      throw new Error(data.error)
+    }
+    if (data.status === 'success' && data.value !== null) {
+      return res.json(JSON.parse(data.value));
+    }
     const query = `SELECT s.species_id,
       ss.iba_criteria, ss.maximum, ss.minimum,
       ss.season, ss.units, si.site_name, si.lat, si.lon, si.country, si.iso2,
@@ -105,7 +126,7 @@ function getSpeciesSites(req, res) {
     si.hyperlink, si.site_id, 1, ss.geometric_mean, ss.start, ss._end
     ORDER BY si.site_name`;
     runQuery(query)
-      .then((data) => {
+      .then(async (data) => {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           results.map((item) => {
@@ -116,7 +137,7 @@ function getSpeciesSites(req, res) {
             return site;
           });
           const jsonData = JSON.stringify(results);
-          saveFileSync(filePath, jsonData);
+          await cache.add(cacheKey, jsonData);
           res.json(results);
         } else {
           res.status(404);
@@ -127,16 +148,24 @@ function getSpeciesSites(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
   }
 }
 
-function getSpeciesCriticalSites(req, res) {
+async function getSpeciesCriticalSites(req, res) {
   const queryStr = getQueryString(req.query);
-  const filePath = `public/json/species/${req.params.id}/criticalSites${queryStr}.json`;
+  const cacheKey = `species/${req.params.id}/criticalSites${queryStr}`;
+
   try {
-    const data = fs.readFileSync(filePath);
-    res.json(JSON.parse(data));
-  } catch (errRead) {
+    const data = await cache.get(cacheKey);
+    if (data.status === 'fail') {
+      throw new Error(data.error)
+    }
+    if (data.status === 'success' && data.value !== null) {
+      return res.json(JSON.parse(data.value));
+    }
     const query = `SELECT s.species_id,
       ss.popmax as maximum, ss.popmin as minimum, ss.season, ss.units,
       ss.yearstart AS start, ss.yearend AS end, ss.percentfly,
@@ -165,7 +194,7 @@ function getSpeciesCriticalSites(req, res) {
     ORDER BY si.site_name`;
 
     runQuery(query)
-      .then((data) => {
+      .then(async (data) => {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           results.map((item) => {
@@ -176,7 +205,7 @@ function getSpeciesCriticalSites(req, res) {
             return site;
           });
           const jsonData = JSON.stringify(results);
-          saveFileSync(filePath, jsonData);
+          await cache.add(cacheKey, jsonData);
           res.json(results);
         } else {
           res.status(404);
@@ -187,16 +216,24 @@ function getSpeciesCriticalSites(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
   }
 }
 
-function getSpeciesPopulation(req, res) {
+async function getSpeciesPopulation(req, res) {
   const queryStr = getQueryString(req.query);
-  const filePath = `public/json/species/${req.params.id}/population${queryStr}.json`;
+  const cacheKey = `species/${req.params.id}/population${queryStr}`;
+
   try {
-    const data = fs.readFileSync(filePath);
-    res.json(JSON.parse(data));
-  } catch (errRead) {
+    const data = await cache.get(cacheKey);
+    if (data.status === 'fail') {
+      throw new Error(data.error)
+    }
+    if (data.status === 'success' && data.value !== null) {
+      return res.json(JSON.parse(data.value));
+    }
     const query = `SELECT s.species_id AS id, p.wpepopid AS pop_id,
       p.population_name AS population, p.a, p.b, p.c,
       s.iucn_category, p.caf_action_plan, p.eu_birds_directive,
@@ -212,11 +249,11 @@ function getSpeciesPopulation(req, res) {
       ORDER BY p.population_name`;
 
     runQuery(query)
-      .then((data) => {
+      .then(async (data) => {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           const jsonData = JSON.stringify(results);
-          saveFileSync(filePath, jsonData);
+          await cache.add(cacheKey, jsonData);
           res.json(results);
         } else {
           res.status(404);
@@ -227,16 +264,24 @@ function getSpeciesPopulation(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
   }
 }
 
-function getSpeciesLookAlikeSpecies(req, res) {
+async function getSpeciesLookAlikeSpecies(req, res) {
   const queryStr = getQueryString(req.query);
-  const filePath = `public/json/species/${req.params.id}/look-alike-species/index${queryStr}.json`;
+  const cacheKey = `species/${req.params.id}/look-alike-species/index${queryStr}`;
+
   try {
-    const data = fs.readFileSync(filePath);
-    res.json(JSON.parse(data));
-  } catch (errRead) {
+    const data = await cache.get(cacheKey);
+    if (data.status === 'fail') {
+      throw new Error(data.error)
+    }
+    if (data.status === 'success' && data.value !== null) {
+      return res.json(JSON.parse(data.value));
+    }
     const query = `SELECT sq.scientific_name AS original_species,
       sq.species_id AS id,
       sq.wpepopid AS pop_id,
@@ -271,7 +316,7 @@ function getSpeciesLookAlikeSpecies(req, res) {
       ORDER BY sq.population_name ASC`;
 
     runQuery(query)
-      .then((data) => {
+      .then(async (data) => {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           const params = [
@@ -283,7 +328,7 @@ function getSpeciesLookAlikeSpecies(req, res) {
           ];
           const dataParsed = mergeNames(results, params);
           const jsonData = JSON.stringify(dataParsed);
-          saveFileSync(filePath, jsonData);
+          await cache.add(cacheKey, jsonData);
           res.json(dataParsed);
         } else {
           res.json([]);
@@ -293,16 +338,24 @@ function getSpeciesLookAlikeSpecies(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
   }
 }
 
-function getPopulationsLookAlikeSpecies(req, res) {
+async function getPopulationsLookAlikeSpecies(req, res) {
   const queryStr = getQueryString(req.query);
-  const filePath = `public/json/species/${req.params.id}/look-alike-species/${req.params.populationId}${queryStr}.json`;
+  const cacheKey = `species/${req.params.id}/look-alike-species/${req.params.populationId}${queryStr}`;
+
   try {
-    const data = fs.readFileSync(filePath);
-    res.json(JSON.parse(data));
-  } catch (errRead) {
+    const data = await cache.get(cacheKey);
+    if (data.status === 'fail') {
+      throw new Error(data.error)
+    }
+    if (data.status === 'success' && data.value !== null) {
+      return res.json(JSON.parse(data.value));
+    }
     const query = `SELECT
       sm.scientific_name AS scientific_name,
       sm.english_name,
@@ -328,7 +381,7 @@ function getPopulationsLookAlikeSpecies(req, res) {
       ORDER BY sm.taxonomic_sequence ASC, pi.population_name ASC`;
 
     runQuery(query)
-      .then((data) => {
+      .then(async (data) => {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           const params = [
@@ -340,7 +393,7 @@ function getPopulationsLookAlikeSpecies(req, res) {
           ];
           const dataParsed = mergeNames(results, params);
           const jsonData = JSON.stringify(dataParsed);
-          saveFileSync(filePath, jsonData);
+          await cache.add(cacheKey, jsonData);
           res.json(dataParsed);
         } else {
           res.status(404);
@@ -351,16 +404,24 @@ function getPopulationsLookAlikeSpecies(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
   }
 }
 
-function getPopulationVulnerability(req, res) {
+async function getPopulationVulnerability(req, res) {
   const queryStr = getQueryString(req.query);
-  const filePath = `public/json/species/${req.params.id}/population-vulnerability${queryStr}.json`;
+  const cacheKey = `species/${req.params.id}/population-vulnerability${queryStr}`;
+
   try {
-    const data = fs.readFileSync(filePath);
-    res.json(JSON.parse(data));
-  } catch (errRead) {
+    const data = await cache.get(cacheKey);
+    if (data.status === 'fail') {
+      throw new Error(data.error)
+    }
+    if (data.status === 'success' && data.value !== null) {
+      return res.json(JSON.parse(data.value));
+    }
     const query = `SELECT
       CASE
       WHEN t1p.season = 'passage'
@@ -411,11 +472,11 @@ function getPopulationVulnerability(req, res) {
       ORDER BY populations.population_name ASC`;
 
     runQuery(query)
-      .then((data) => {
+      .then(async (data) => {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           const jsonData = JSON.stringify(results);
-          saveFileSync(filePath, jsonData);
+          await cache.add(cacheKey, jsonData);
           res.json(results);
         } else {
           res.status(404);
@@ -426,16 +487,24 @@ function getPopulationVulnerability(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
   }
 }
 
-function getTriggerCriticalSitesSuitability(req, res) {
+async function getTriggerCriticalSitesSuitability(req, res) {
   const queryStr = getQueryString(req.query);
-  const filePath = `public/json/species/${req.params.id}/trigger-cs-suitability${queryStr}.json`;
+  const cacheKey = `species/${req.params.id}/trigger-cs-suitability${queryStr}`;
+
   try {
-    const data = fs.readFileSync(filePath);
-    res.json(JSON.parse(data));
-  } catch (errRead) {
+    const data = await cache.get(cacheKey);
+    if (data.status === 'fail') {
+      throw new Error(data.error)
+    }
+    if (data.status === 'success' && data.value !== null) {
+      return res.json(JSON.parse(data.value));
+    }
     const query = `SELECT 
       sites.country, 
       sites.site_name_clean AS csn_site_name,
@@ -462,7 +531,7 @@ function getTriggerCriticalSitesSuitability(req, res) {
       ORDER BY sites.site_name_clean ASC`;
 
     runQuery(query)
-      .then((data) => {
+      .then(async (data) => {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           results.map((item) => {
@@ -472,7 +541,7 @@ function getTriggerCriticalSitesSuitability(req, res) {
             return row;
           });
           const jsonData = JSON.stringify(results);
-          saveFileSync(filePath, jsonData);
+          await cache.add(cacheKey, jsonData);
           res.json(results);
         } else {
           res.status(404);
@@ -483,23 +552,34 @@ function getTriggerCriticalSitesSuitability(req, res) {
         res.status(err.statusCode || 500);
         res.json({ error: err.message });
       });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
   }
 }
 
-function getSpeciesSeasons(req, res) {
+async function getSpeciesSeasons(req, res) {
   const queryStr = getQueryString(req.query);
-  const filePath = `public/json/species/${req.params.id}/seasons${queryStr}.json`;
+  const cacheKey = `species/${req.params.id}/seasons${queryStr}`;
+
   try {
-    const data = fs.readFileSync(filePath);
-    res.json(JSON.parse(data));
-  } catch (errRead) {
+    const data = await cache.get(cacheKey);
+    if (data.status === 'fail') {
+      throw new Error(data.error)
+    }
+    if (data.status === 'success' && data.value !== null) {
+      return res.json(JSON.parse(data.value));
+    }
     const query = `SELECT DISTINCT season FROM table_1_species WHERE ssis = ${req.params.id}`;
-    runQuery(query).then((data) => {
+    runQuery(query).then(async (data) => {
       const results = JSON.parse(data).rows || [];
       const jsonData = JSON.stringify(results);
-      saveFileSync(filePath, jsonData);
+      await cache.add(cacheKey, jsonData);
       res.json(results);
     });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
   }
 }
 
