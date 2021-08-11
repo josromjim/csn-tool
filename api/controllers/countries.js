@@ -8,7 +8,7 @@ async function getCountries(req, res) {
   try {
     const data = await cache.get(cacheKey);
     if (data.status === 'fail') {
-      throw new Error(data.error)
+      throw new Error(data.error);
     }
     if (data.status === 'success' && data.value !== null) {
       return res.json(JSON.parse(data.value));
@@ -39,7 +39,7 @@ async function getCountryDetails(req, res) {
   try {
     const data = await cache.get(cacheKey);
     if (data.status === 'fail') {
-      throw new Error(data.error)
+      throw new Error(data.error);
     }
     if (data.status === 'success' && data.value !== null) {
       return res.json(JSON.parse(data.value));
@@ -75,7 +75,7 @@ async function getCountrySites(req, res) {
   try {
     const data = await cache.get(cacheKey);
     if (data.status === 'fail') {
-      throw new Error(data.error)
+      throw new Error(data.error);
     }
     if (data.status === 'success' && data.value !== null) {
       return res.json(JSON.parse(data.value));
@@ -133,7 +133,7 @@ async function getCountryCriticalSites(req, res) {
   try {
     const data = await cache.get(cacheKey);
     if (data.status === 'fail') {
-      throw new Error(data.error)
+      throw new Error(data.error);
     }
     if (data.status === 'success' && data.value !== null) {
       return res.json(JSON.parse(data.value));
@@ -191,7 +191,7 @@ async function getCountrySpecies(req, res) {
   try {
     const data = await cache.get(cacheKey);
     if (data.status === 'fail') {
-      throw new Error(data.error)
+      throw new Error(data.error);
     }
     if (data.status === 'success' && data.value !== null) {
       return res.json(JSON.parse(data.value));
@@ -231,7 +231,7 @@ async function getCountryPopulations(req, res) {
   try {
     const data = await cache.get(cacheKey);
     if (data.status === 'fail') {
-      throw new Error(data.error)
+      throw new Error(data.error);
     }
     if (data.status === 'success' && data.value !== null) {
       return res.json(JSON.parse(data.value));
@@ -288,7 +288,7 @@ async function getCountryWithLookAlikeCounts(req, res) {
       const data = await cache.get(cacheKey);
 
       if (data.status === 'fail') {
-        throw new Error(data.error)
+        throw new Error(data.error);
       }
       if (data.status === 'success' && data.value !== null) {
         return res.json(JSON.parse(data.value)); 
@@ -356,7 +356,7 @@ async function getCountryPopsWithLookAlikeCounts(req, res) {
       const data = await cache.get(cacheKey);
 
       if (data.status === 'fail') {
-        throw new Error(data.error)
+        throw new Error(data.error);
       }
       if (data.status === 'success' && data.value !== null) {
         return res.json(JSON.parse(data.value)); 
@@ -423,7 +423,7 @@ async function getCountryPopsWithLookAlikeCountsByOne(req, res) {
       const data = await cache.get(cacheKey);
 
       if (data.status === 'fail') {
-        throw new Error(data.error)
+        throw new Error(data.error);
       }
       if (data.status === 'success' && data.value !== null) {
         return res.json(JSON.parse(data.value)); 
@@ -505,7 +505,7 @@ async function getCountryLookAlikeSpecies(req, res) {
   try {
     const data = await cache.get(cacheKey);
     if (data.status === 'fail') {
-      throw new Error(data.error)
+      throw new Error(data.error);
     }
     if (data.status === 'success' && data.value !== null) {
       return res.json(JSON.parse(data.value)); 
@@ -592,7 +592,7 @@ async function getTriggerSpeciesSuitability(req, res) {
   try {
     const data = await cache.get(cacheKey);
     if (data.status === 'fail') {
-      throw new Error(data.error)
+      throw new Error(data.error);
     }
     if (data.status === 'success' && data.value !== null) {
       return res.json(JSON.parse(data.value)); 

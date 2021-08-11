@@ -21,6 +21,7 @@ rules:
   max-len: [1, 140, 2, {"ignoreUrls":true}]
   comma-dangle: [error, never]
   no-console: [error, allow: [warn, error, info]]
+  consistent-return: 0
 settings:
   import/resolver:
     node:
