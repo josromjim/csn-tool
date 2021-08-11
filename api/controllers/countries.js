@@ -235,7 +235,7 @@ function getCountryWithLookAlikeCounts(req, res) {
   const queryStr = getQueryString(req.query);
   const filePath = `public/json/countries/${req.params.iso}/look-alike-species-count${queryStr}.json`;
   try {
-    if (req.query.filter) throw 'filter';
+    if (req.query.filter) throw new Error('filter is active');
     const data = fs.readFileSync(filePath);
     res.json(JSON.parse(data));
   } catch (errRead) {
