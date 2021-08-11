@@ -274,8 +274,8 @@ export function getCountryTriggerSuitability(iso) {
     dispatch(setCountryPreload(category, true));
 
     fetch(url)
-      .then(response => response.json())
-      .then(data => {
+    .then(response => response.json())
+    .then(data => {
         dispatch({
           type: GET_COUNTRIES_TRIGGER_SUITABILITY,
           payload: {

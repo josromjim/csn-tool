@@ -596,6 +596,9 @@ async function getTriggerSpeciesSuitability(req, res) {
     }
     const query = `SELECT t2a.populationname AS population_name,
       t2a.species_c_254 AS species,
+      t2a.site_id AS id,
+      t2a.site_id AS site_id,
+      t2a.name_c_254 as csn_name,
       t2a.season, t2a.percentfly, t2a.current_suitability,
       t2a.future_suitability, ROUND(CAST(change AS numeric), 2) AS change_suitability,
       threshold,

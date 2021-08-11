@@ -49,6 +49,8 @@ class CountriesTable extends React.Component {
         return 'species';
       case 'sites':
         return 'sites/iba';
+      case 'triggerSuitability':
+        return 'sites/csn';
       default:
         return category;
     }
