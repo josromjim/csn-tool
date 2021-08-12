@@ -37,7 +37,6 @@ const initialState = {
     inundationPresent: false,
     inundation2050: false,
     aewaExtent: false,
-    birdLife: false
   },
   filter: 'iba',
   stats: {},

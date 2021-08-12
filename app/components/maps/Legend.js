@@ -227,7 +227,7 @@ class Legend extends React.Component {
                 <div className="legend-line" />
                 <div className="section">
                   <div className="section-header">
-                    <p>Species Distribution Change</p>
+                    <p>Modelled species distribution change</p>
                     <Switch checked={isClimateCollapse} onChange={() => setClimateCollapse(!isClimateCollapse)} />
                   </div>
                   <SmoothCollapse className="section-body" expanded={isClimateCollapse}>

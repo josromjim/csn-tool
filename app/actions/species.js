@@ -222,7 +222,7 @@ export function getSpeciesBirdfile(id) {
         dispatch({
           type: SET_SPECIES_BIRDLIFE,
           payload: data.rows.map((r, n) => {
-            r.color = getBirdLifeStyle(n).fillColor;
+            r.color = getBirdLifeStyle(r.seasonal).fillColor;
             return r;
           })
         });

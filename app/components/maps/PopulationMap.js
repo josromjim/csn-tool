@@ -118,18 +118,27 @@ class PopulationMap extends BasicMap {
   addBirdLifeLayer() {
     this.selectedBirdLifeLayer = [];
     const arr = this.props.birdlife || [];
-    arr.map((d, n) => {
-      const { bbox, coordinates, type, color } = d;
+    const geomArr = [];
+    const layersArr = [];
+    arr.forEach((d, n) => {
+      if (!layersArr.some(l => l.seasonal && l.seasonal === d.seasonal)) {
+        const style = getBirdLifeStyle(d.seasonal);
+        layersArr.push({ seasonal: d.seasonal, data: [], style });
+      }
+      const seasonId = layersArr.findIndex(l => l.seasonal && l.seasonal === d.seasonal);      
+      const { bbox, coordinates, type } = d;
       const geom = { bbox, coordinates, type };
-      const style = getBirdLifeStyle(n);
-      style.fillColor = color;
-      const layer = L.geoJSON(geom, {
+      geomArr.push(geom);
+      layersArr[seasonId].data.push(geom);
+    });
+    layersArr.forEach(l => {
+      const layer = L.geoJSON(l.data, {
         noWrap: true,
-        style,
+        style: l.style,
       });
       layer.addTo(this.map);
       this.selectedBirdLifeLayer.push(layer);
-    })
+    });
   }
 
   clearBirdlife() {
@@ -197,10 +206,8 @@ class PopulationMap extends BasicMap {
     const layers = this.populationLayerGroup.getLayers();
 
     if (layers.some((l) => l.options.populationId === populationId)) return;
-
     const color = this.populationColors[populationId];
     const isActive = this.props.selectedPopulationId === populationId;
-
     const layer = L.geoJSON(layerGeoJSON, {
       populationId,
       noWrap: true,

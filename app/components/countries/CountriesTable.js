@@ -103,7 +103,7 @@ class CountriesTable extends React.Component {
       tableCounts
     } = this.props;
 
-    const detailLink = this.getDetailLink(category);
+     const detailLink = this.getDetailLink(category);
     const isLookAlikeSpecies = category.startsWith('lookAlikeSpecies');
     const isLookAlikeSpeciesPage = category === 'lookAlikeSpecies';
     const isExpanded = !!(isLookAlikeSpecies && selectedLASpeciesPopulation);

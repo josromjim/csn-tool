@@ -42,17 +42,11 @@ export const BOUNDARY_COLORS = [
 ];
 
 export const BIRDLIFE_COLORS = [
-  '#a6cee3',
-  '#1f78b4',
-  '#b2df8a',
-  '#33a02c',
-  '#fb9a99',
-  '#e31a1c',
-  '#fdbf6f',
-  '#ff7f00',
-  '#cab2d6',
-  '#6a3d9a',
-  '#ffff99'
+  '#BB6AC6', // Resident
+  '#FF9700', // Breeding
+  '#81D7FF', // Non-breeding
+  '#FBFF00', // Passage
+  '#B7B7B7'  // Unknown
 ];
 
 // aewa styles
@@ -80,8 +74,29 @@ export const SELECTED_BIRDLIFE_STYLE = {
   interactive: false
 };
 
-export const getBirdLifeStyle = (n) => {
-  const style = SELECTED_BIRDLIFE_STYLE;
-  style.fillColor = BIRDLIFE_COLORS[n];
-  return style;
+export const BIRDLIFE_SEASONS = [
+  {
+    id: 1,
+    name: 'Resident',
+  },
+  {
+    id: 2,
+    name: 'Breeding',
+  },
+  {
+    id: 3,
+    name: 'Non-breeding',
+  },
+  {
+    id: 4,
+    name: 'Passage',
+  },
+  {
+    id: 5,
+    name: 'Seasonal Occurrence Uncertain',
+  },
+];
+
+export const getBirdLifeStyle = (season) => {
+  return { ...SELECTED_BIRDLIFE_STYLE, fillColor: BIRDLIFE_COLORS[season - 1] };
 };

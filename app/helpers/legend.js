@@ -1,4 +1,5 @@
 import { uniqueBy } from 'helpers/data';
+import { BIRDLIFE_SEASONS } from 'constants/map'
 
 const PROTECTION_LEVELS_ORDER = ['Little/none', 'Some', 'Most', 'Whole', 'Unknown'];
 const HYDROLOGY_SECTIONS = [
@@ -350,23 +351,20 @@ export function getAewaSections(layers) {
   ];
 }
 
-export function getBirdlifeSections(layers, birdlife, selected) {
+export function getBirdlifeSections(layers, birdlife = [], selected) {
 
   const activeLayer = Object.keys(layers).filter(key => layers[key] && key === 'birdLife')[0];
+  let items = [];
 
-  let items = []
-  if (birdlife) {
-    const seasons = {
-      1: 'Resident',
-      2: 'Breeding Season',
-      3: 'Non-breeding Season',
-      4: 'Passage',
-      5: 'Seasonal Occurrence Uncertain',
-    };
-    items = (birdlife || []).map((l, n) => ({
+  const filtered = [];
+  birdlife.forEach(l => {
+    if (!filtered.some(f => f.seasonal === l.seasonal)) filtered.push(l);
+  });
+  if (filtered && filtered.length > 0) {
+    items = (filtered || []).map(l => ({
       icon: 'circle',
       id: l.id,
-      name: `${seasons[l.seasonal]}`,
+      name: BIRDLIFE_SEASONS.find(s => s.id === l.seasonal).name,
       color: l.color,
     }));
   }
@@ -376,7 +374,7 @@ export function getBirdlifeSections(layers, birdlife, selected) {
       {
         active: layers[activeLayer],
         layer: 'birdLife',
-        name: 'Bird Life',
+        name: 'BirdLife International species range maps',
         items,
       }
     ];
