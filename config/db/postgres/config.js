@@ -45,7 +45,7 @@ module.exports = {
     },
     pool: {
       max: 6,
-      min: 1,
+      min: 0,
       acquire: 200000
     }
   }
