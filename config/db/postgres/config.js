@@ -19,6 +19,13 @@ module.exports = {
         require: true,
         rejectUnauthorized: false // <<<<<< YOU NEED THIS
       }
+    },
+    pool: {
+      handleDisconnects: true,
+      max: 4,
+      min: 1,
+      idle: 100000,
+      acquire: 200000
     }
   },
   PROD: {
@@ -35,6 +42,13 @@ module.exports = {
         require: true,
         rejectUnauthorized: false // <<<<<< YOU NEED THIS
       }
+    },
+    pool: {
+      handleDisconnects: true,
+      max: 4,
+      min: 1,
+      idle: 100000,
+      acquire: 200000
     }
   }
 };
