@@ -22,7 +22,7 @@ module.exports = {
     },
     pool: {
       handleDisconnects: true,
-      max: 2,
+      max: 4,
       min: 1,
       idle: 100000,
       acquire: 200000
@@ -35,7 +35,7 @@ module.exports = {
     host: process.env.POSTGRES_DB_HOST,
     port: process.env.POSTGRES_DB_PORT,
     dialect: 'postgres',
-    ssl: false,
+    ssl: true,
     logging: true,
     dialectOptions: {
       ssl: {
@@ -44,10 +44,8 @@ module.exports = {
       }
     },
     pool: {
-      handleDisconnects: true,
-      max: 2,
+      max: 6,
       min: 1,
-      idle: 100000,
       acquire: 200000
     }
   }
