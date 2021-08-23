@@ -505,8 +505,8 @@ async function getTriggerCriticalSitesSuitability(req, res) {
     if (dataCache.status === 'success' && dataCache.value !== null) {
       return res.json(JSON.parse(dataCache.value));
     }
-    const query = `SELECT 
-      sites.country, 
+    const query = `SELECT
+      sites.country,
       sites.site_name_clean AS csn_site_name,
       sites.site_id,
       sites.lon,
@@ -584,9 +584,11 @@ async function getSpeciesSeasons(req, res) {
 }
 
 async function getSpeciesBirdlife(req, res) {
+  res.writeHead(202, {"Content-Type": "application/json"});
+  res.write(' ');
   try {
-    const { id } = req.params;
-    const polygons = await BirdLife.findAll({ where: { sis_id: id } });
+    const {id} = req.params;
+    const polygons = await BirdLife.findAll({where: {sis_id: id}});
     if (!polygons) {
       throw new Error('have filter');
     }
@@ -608,11 +610,10 @@ async function getSpeciesBirdlife(req, res) {
       };
       return resGeometry;
     });
-
-    res.status(200).json({ rows });
+    res.end(JSON.stringify({rows}));
   } catch (err) {
-    res.status(err.statusCode || 500);
-    res.json({ error: err.message });
+    //res.status(err.statusCode || 500);
+    res.end(JSON.stringify({error: err.message}));
   }
 }
 

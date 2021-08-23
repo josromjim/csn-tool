@@ -45,7 +45,7 @@ router.route('/species/:id/sites').get(SpeciesCtrl.getSpeciesSites);
 router.route('/species/:id/seasons').get(SpeciesCtrl.getSpeciesSeasons);
 router.route('/species/:id/criticalSites').get(SpeciesCtrl.getSpeciesCriticalSites);
 router.route('/species/:id/population').get(SpeciesCtrl.getSpeciesPopulation);
-router.route('/species/:id/birdlife').get(SpeciesCtrl.getSpeciesBirdlife);
+router.route('/species/:id/birdlife').get( SpeciesCtrl.getSpeciesBirdlife);
 router.route('/species/:id/look-alike-species').get(SpeciesCtrl.getSpeciesLookAlikeSpecies);
 router.route('/species/:id/look-alike-species/:populationId').get(SpeciesCtrl.getPopulationsLookAlikeSpecies);
 router.route('/species/:id/population-vulnerability').get(SpeciesCtrl.getPopulationVulnerability);
