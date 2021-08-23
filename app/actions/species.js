@@ -218,11 +218,13 @@ export function getSpeciesBirdfile(id) {
   return (dispatch) => {
     const time = new Date().getTime();
     console.log(`birdlife-api-start - ${time}`);
+    console.time('test');
     fetch(url)
       .then(response => response.json())
       .then(data => {
         const time = new Date().getTime();
         console.log(`birdlife-api-end - ${time}`);
+        console.time('test');
         dispatch({
           type: SET_SPECIES_BIRDLIFE,
           payload: data.rows.map((r, n) => {
