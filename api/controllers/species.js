@@ -4,7 +4,6 @@ const { runQuery, getQueryString } = require('../helpers');
 const { BirdLife } = require('../db/postgres/models');
 const bbox = require('geojson-bbox');
 const cache = require('../helpers/cache');
-const birdlifeJson = require('../../new-birdlife');
 
 async function getSpeciesList(req, res) {
   const queryStr = getQueryString(req.query);

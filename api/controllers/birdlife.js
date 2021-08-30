@@ -45,16 +45,15 @@ async function getAndSaveAllBirdlifeData(req, res) {
   const count = 2322; // 2322;
   try {
     for (let i = 0; i < count; i += 1) {
-      const birdLifeItems = await BirdLife.findAll({ offset: i, limit: 1, order: [['id','ASC']] });
-      if (birdLifeItems && birdLifeItems.length > 0){
+      const birdLifeItems = await BirdLife.findAll({ offset: i, limit: 1, order: [['id', 'ASC']] });
+      if (birdLifeItems && birdLifeItems.length > 0) {
         await birdLifeItems.map(async birdLifeItem => {
           const poly = birdLifeItem.dataValues;
-          console.log(`id - ${poly.id}`);
           const coordinatesCompressed = compressGeometry(poly.geometry.coordinates);
           const geometryCompressed = {
             ...poly.geometry,
             coordinates: coordinatesCompressed
-          }
+          };
           await BirdLife.update({ coordinates_compressed: geometryCompressed }, { where: { id: poly.id } });
         });
       }

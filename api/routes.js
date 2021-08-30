@@ -6,11 +6,11 @@ const ThresholdCtrl = require('./controllers/threshold');
 const SearchCtrl = require('./controllers/search');
 const TablesCtrl = require('./controllers/tables');
 const CacheCtrl = require('./controllers/cache');
-const BirdlifeCtrl = require('./controllers/birdlife');
+// const BirdlifeCtrl = require('./controllers/birdlife');
 const router = Express.Router(); // eslint-disable-line new-cap
 
-// birdlifeDb
-router.route('/birdlife/get-all').get(BirdlifeCtrl.getAndSaveAllBirdlifeData);
+// // birdlifeDb
+// router.route('/birdlife/get-all').get(BirdlifeCtrl.getAndSaveAllBirdlifeData);
 
 // cache
 router.route('/cache/clear').get(CacheCtrl.clearCache);
