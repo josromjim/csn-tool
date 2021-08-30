@@ -4,6 +4,7 @@ const { runQuery, getQueryString } = require('../helpers');
 const { BirdLife } = require('../db/postgres/models');
 const bbox = require('geojson-bbox');
 const cache = require('../helpers/cache');
+const birdlifeJson = require('../../new-birdlife');
 
 async function getSpeciesList(req, res) {
   const queryStr = getQueryString(req.query);
@@ -586,6 +587,8 @@ async function getSpeciesSeasons(req, res) {
 async function getSpeciesBirdlife(req, res) {
   res.writeHead(202, { 'Content-Type': 'application/json' });
   res.write(' ');
+  // res.end(JSON.stringify(birdlifeJson));
+
   try {
     const { id } = req.params;
     const polygons = await BirdLife.findAll({ where: { sis_id: id } });
@@ -595,7 +598,7 @@ async function getSpeciesBirdlife(req, res) {
     const rows = polygons.map(p => {
       const feature = {
         type: 'Feature',
-        geometry: p.geometry
+        geometry: p.coordinates_compressed
       };
       const extent = bbox(feature);
       const resGeometry = {
@@ -603,7 +606,7 @@ async function getSpeciesBirdlife(req, res) {
         citation: p.citation,
         source: p.source,
         seasonal: p.seasonal,
-        ...p.geometry,
+        ...p.coordinates_compressed,
         ...{
           bbox: extent
         }

@@ -214,6 +214,16 @@ export function getSpeciesSeasons(id) {
 }
 
 export function getSpeciesBirdfile(id) {
+  // const data = birdlifeJson;
+  // return (dispatch) => {
+  //   dispatch({
+  //     type: SET_SPECIES_BIRDLIFE,
+  //     payload: data.rows.map((r, n) => {
+  //       r.color = getBirdLifeStyle(r.seasonal).fillColor;
+  //       return r;
+  //     })
+  //   });
+  // };
   const url = `${config.apiHost}/species/${id}/birdlife`;
   return (dispatch) => {
     const time = new Date().getTime();

@@ -32,7 +32,8 @@ module.exports = (sequelize, DataTypes) => {
     source: DataTypes.STRING,
     dist_comm: DataTypes.STRING,
     version: DataTypes.STRING,
-    geometry: DataTypes.GEOMETRY
+    // geometry: DataTypes.GEOMETRY,
+    coordinates_compressed: DataTypes.GEOMETRY
   }, {
     sequelize,
     modelName: 'BirdLife',

@@ -83,6 +83,7 @@
     "scroll-behavior": "^0.9.3",
     "sequelize": "^6.6.5",
     "shapefile-stream": "0.0.4",
+    "simplify-geometry": "0.0.2",
     "smoothscroll": "^0.3.0",
     "stream": "0.0.2",
     "style-loader": "^0.13.1",
