@@ -6,6 +6,7 @@ import {
   GET_SPECIES_POPULATION_VULNERABILITY,
   GET_SPECIES_TRIGGER_CRITICAL_SUITABILITY,
   GET_SPECIES_POPULATION,
+  GET_SPECIES_POPULATION_THREATS,
   GET_SPECIES_SITES,
   GET_SPECIES_STATS,
   SELECT_TABLE_ITEM,
@@ -119,6 +120,24 @@ export function getSpeciesPopulation(id) {
           type: GET_SPECIES_POPULATION,
           payload: {
             id,
+            data
+          }
+        });
+      });
+  };
+}
+
+export function getSpeciesPopulationThreats(id, populationId) {
+  const url = `${config.apiHost}/species/${id}/population/${populationId}/threats`;
+  return dispatch => {
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        dispatch({
+          type: GET_SPECIES_POPULATION_THREATS,
+          payload: {
+            id,
+            populationId,
             data
           }
         });

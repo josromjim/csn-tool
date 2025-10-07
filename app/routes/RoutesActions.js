@@ -61,7 +61,7 @@ export function updateSpeciesDetailPage(actualState, replace, done) {
   const population = actualState.params.population;
   const category = actualState.params.cat === 'lookAlikeSpecies' && population
     ? 'lookAlikeSpeciesPopulation'
-    : actualState.params.cat;
+    : actualState.params.cat === 'population' && population ? 'populationThreats' : actualState.params.cat;
   const cat = category || 'sites'; // default value
 
   dispatch(setSpeciesDetailParams(id, cat, population));

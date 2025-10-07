@@ -20,10 +20,14 @@ class SpeciesDetailTable extends React.Component {
 
     if (!this.props.selectedLASpeciesPopulation) return null;
 
+    let link = `/species/${selectedLASpeciesPopulation.species_id}/lookAlikeSpecies`;
+    if(this.props.category === "populationThreats") {
+      link = `/species/${selectedLASpeciesPopulation.id}/population`;
+    }
     return (
       <SpeciesPopulationHeader
         species={selectedLASpeciesPopulation}
-        backLinkTo={`/species/${selectedLASpeciesPopulation.species_id}/lookAlikeSpecies`}
+        backLinkTo={link}
       />
     );
   }
@@ -33,6 +37,8 @@ class SpeciesDetailTable extends React.Component {
       case 'populations':
         return 'species';
       case 'population':
+        return 'threats';
+      case 'populationThreats':
         return null; // no display
       case 'criticalSites':
         return 'sites/csn';
@@ -80,7 +86,7 @@ class SpeciesDetailTable extends React.Component {
           id={this.props.id}
           category={this.props.category}
         />
-        {isExpanded && this.getSelectedHeader()}
+        {(isExpanded || this.props.category == "populationThreats") && this.getSelectedHeader()}
         <TableListHeader
           data={data}
           columns={columns}

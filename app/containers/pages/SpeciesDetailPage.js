@@ -4,6 +4,7 @@ import {
   getSpeciesStats,
   getSpeciesSites,
   getSpeciesPopulation,
+  getSpeciesPopulationThreats,
   getSpeciesCriticalSites,
   getSpeciesLookAlikeSpecies,
   getSpeciesLookAlikeSpeciesPopulation,
@@ -40,6 +41,9 @@ const mapDispatchToProps = (dispatch) => ({
         break;
       case 'population':
         dispatch(getSpeciesPopulation(id));
+        break;
+      case 'populationThreats':
+        dispatch(getSpeciesPopulationThreats(id, populationId));
         break;
       case 'lookAlikeSpecies':
         dispatch(getSpeciesLookAlikeSpecies(id));

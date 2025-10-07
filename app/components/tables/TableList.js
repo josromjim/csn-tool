@@ -46,10 +46,11 @@ function getDetailLink(t, detailLink, item, isLookAlike, onClick) {
 
   const linkText = detailLink.toLowerCase().indexOf('species') > -1 ?
     (detailLink.toLowerCase().indexOf('population') > -1 ? t('viewLookAlike') : t('viewSpeciesDetails'))
-      : t('viewSiteDetails');
+      : detailLink.toLowerCase().indexOf('threats') > -1 ? t('viewPopulationThreats') : t('viewSiteDetails');
   const link = {
     countrySpeciesPopulation: `/countries/${item.iso3}/lookAlikeSpecies/${item.pop_id_origin}`,
-    speciesPopulation: `/species/${item.species_id}/lookAlikeSpecies/${item.pop_id_origin}`
+    speciesPopulation: `/species/${item.species_id}/lookAlikeSpecies/${item.pop_id_origin}`,
+    threats: `/species/${item.id}/population/${item.pop_id}`
   }[detailLink] || `/${detailLink}/${item.id}`;
 
   if (isLookAlike && detailLink === 'species') {

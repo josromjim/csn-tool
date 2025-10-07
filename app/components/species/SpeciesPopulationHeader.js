@@ -32,7 +32,9 @@ const SpeciesPopulationHeader = ({ species, backLinkTo }, context) => ((
         <span>{species.original_c || '-'}</span>
       </div>
     </div>
-    <p><u>{context.t('lookAlikeClickRow')}</u></p>
+    {!species.isThreat && (
+      <p><u>{context.t('lookAlikeClickRow')}</u></p>
+    )}
   </div>
 ));
 

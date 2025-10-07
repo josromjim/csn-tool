@@ -270,6 +270,50 @@ async function getSpeciesPopulation(req, res) {
   }
 }
 
+async function getSpeciesPopulationThreats(req, res) {
+  //const queryStr = getQueryString(req.query);
+  //const cacheKey = `species/${req.params.id}/population${queryStr}`;
+
+  try {
+    // const dataCache = await cache.get(cacheKey);
+    // if (dataCache.status === 'fail') {
+    //   throw new Error(dataCache.error);
+    // }
+    // if (dataCache.status === 'success' && dataCache.value !== null) {
+    //   return res.json(JSON.parse(dataCache.value));
+    // }
+    const query = `SELECT p.species_main_id AS species_id, p.wpepopid AS pop_id, t.threat_id,
+      p.population_name AS population, t.threat_code, t.threat_label,
+      t.description, t.scope, t.severity
+      FROM threats t
+      INNER JOIN populations p on p.wpepopid = t.pop_id
+      WHERE p.species_main_id = '${req.params.id}' AND p.wpepopid = ${req.params.populationId} 
+        AND t.timing='Ongoing' AND severity NOT IN ('Negligible declines', 'Unknown', 'NA', 'No decline', '')
+      ORDER BY p.population_name`;
+
+    runQuery(query)
+      .then(async (data) => {
+        const results = JSON.parse(data).rows || [];
+        if (results && results.length > 0) {
+          const jsonData = JSON.stringify(results);
+          //await cache.add(cacheKey, jsonData);
+          res.json(results);
+        } else {
+          res.status(404);
+          res.json({ error: 'There are no threats for this Population' });
+        }
+      })
+      .catch((err) => {
+        res.status(err.statusCode || 500);
+        res.json({ error: err.message });
+      });
+  } catch (err) {
+    res.status(err.statusCode || 500);
+    res.json({ error: err.message });
+  }
+}
+
+
 async function getSpeciesLookAlikeSpecies(req, res) {
   const queryStr = getQueryString(req.query);
   const cacheKey = `species/${req.params.id}/look-alike-species/index${queryStr}`;
@@ -626,6 +670,7 @@ module.exports = {
   getSpeciesSites,
   getSpeciesCriticalSites,
   getSpeciesPopulation,
+  getSpeciesPopulationThreats,
   getSpeciesLookAlikeSpecies,
   getPopulationsLookAlikeSpecies,
   getPopulationVulnerability,

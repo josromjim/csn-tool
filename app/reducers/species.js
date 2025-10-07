@@ -6,6 +6,7 @@ import {
   GET_SPECIES_POPULATION_VULNERABILITY,
   GET_SPECIES_TRIGGER_CRITICAL_SUITABILITY,
   GET_SPECIES_POPULATION,
+  GET_SPECIES_POPULATION_THREATS,
   GET_SPECIES_SITES,
   GET_SPECIES_STATS,
   SET_SPECIES_DETAIL_PARAMS,
@@ -37,6 +38,7 @@ const initialState = {
   sites: {},
   criticalSites: {},
   population: {},
+  populationThreats: {},
   populationVulnerability: {},
   triggerCriticalSuitability: {},
   lookAlikeSpecies: {},
@@ -105,7 +107,7 @@ const speciesReducer = (state = initialState, action) => {
         selectedCategory: category,
         columns: DEFAULT_SPECIES_COLUMNS[category],
         allColumns: ALL_SPECIES_COLUMNS[category],
-        selectedLASpeciesPopulation: category === 'lookAlikeSpeciesPopulation' ? action.payload.population : null,
+        selectedLASpeciesPopulation: category === 'lookAlikeSpeciesPopulation' || category === 'populationThreats' ? action.payload.population : null,
         selectedTableItem: null
       };
       return Object.assign({}, state, params);
@@ -132,6 +134,11 @@ const speciesReducer = (state = initialState, action) => {
       const data = Object.assign({}, state.population, {});
       data[action.payload.id] = action.payload.data;
       return Object.assign({}, state, { population: data });
+    }
+    case GET_SPECIES_POPULATION_THREATS: {
+      const data = Object.assign({}, state.populationThreats, {});
+      data[action.payload.populationId] = action.payload.data;
+      return Object.assign({}, state, { populationThreats: data });
     }
     case GET_SPECIES_LOOK_ALIKE_SPECIES: {
       const data = Object.assign({}, state.lookAlikeSpecies, {});
