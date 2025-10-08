@@ -272,7 +272,7 @@ async function getSpeciesPopulation(req, res) {
 
 async function getSpeciesPopulationThreats(req, res) {
   const queryStr = getQueryString(req.query);
-  const cacheKey = `species/${req.params.id}/populationThreats${queryStr}`;
+  const cacheKey = `species/${req.params.id}/population-threats/${req.params.populationId}${queryStr}`;
 
   try {
     const dataCache = await cache.get(cacheKey);

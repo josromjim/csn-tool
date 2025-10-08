@@ -3,7 +3,7 @@ const cache = require('../helpers/cache');
 
 async function getThreatsList(req, res) {
   const queryStr = getQueryString(req.query);
-  const cacheKey = `threats/${queryStr}`;
+  const cacheKey = `threats${queryStr}`;
 
   try {
     const dataCache = await cache.get(cacheKey);
