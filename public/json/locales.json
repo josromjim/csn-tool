@@ -105,6 +105,7 @@
         "sitesFilter": "Any term in the table",
         "selectAnotherPoint": "Select another point",
         "speciesFilter": "Any term in the table",
+        "threatsFilter": "Any term in the table",
         "iucn_category": "Red List category",
         "iucn_category_descr": "Description red list category",
         "occurrence_status": "Occurrence status",
@@ -202,7 +203,8 @@
         "code_S": "Special breeding bird surveys",
         "code_V": "Vocalisation counts (at night) of breeding birds",
         "code_W": "Aerial surveys of floodplains",
-        "loading_cache_message": "Producing this list may take some time at the first time for a country. Please, be patient."
+        "loading_cache_message": "Producing this list may take some time at the first time for a country. Please, be patient.",
+        "threats": "Threats"
     },
     "ru": {
         "country": "Страна",
@@ -309,6 +311,7 @@
         "sitesFilter": "Условие в таблице",
         "selectAnotherPoint": "Выбрать другую точку",
         "speciesFilter": "Условие в таблице",
+        "threatsFilter": "Условие в таблице",
         "iucn_category": "Категория Красного списка",
         "iucn_category_descr": "Описание Категория Красного списка",
         "occurrence_status": "Статус встречаемости",
@@ -405,7 +408,8 @@
         "code_S": "Special breeding bird surveys",
         "code_V": "Vocalisation counts (at night) of breeding birds",
         "code_W": "Aerial surveys of floodplains",
-        "loading_cache_message": "Создание этого списка может занять некоторое время в первый раз. Пожалуйста, проявите терпение."
+        "loading_cache_message": "Создание этого списка может занять некоторое время в первый раз. Пожалуйста, проявите терпение.",
+        "threats": "Угрозы"
     },
     "fr": {
         "country": "Pays",
@@ -506,6 +510,7 @@
         "sitesFilter": "Tout terme dans le tableau",
         "selectAnotherPoint": "Sélectionner un autre point",
         "speciesFilter": "Tout terme dans le tableau",
+        "threatsFilter": "Tout terme dans le tableau",
         "iucn_category": "Catégorie de la Liste rouge",
         "iucn_category_descr": "Description Catégorie de la Liste rouge",
         "occurrence_status": "Statut d'occurrence",
@@ -570,21 +575,8 @@
         "noDataFound": "Pas de données disponibles",
         "noDataFoundAdvancedSearch": "No results found. Please adjust your search criteria and try again. Please be also mindful that we use logical AND condition between different filters and OR condition within the same filter.",
         "legendsTitle": "Légendes",
-        "code_A": "Aerial surveys of floodplains",
-        "code_C": "Colony counts",
-        "code_D": "Common breeding bird monitoring",
-        "code_G": "Non-breeding goose and swan counts",
-        "code_I": "January waterbird counts",
-        "code_J": "July waterbid counts",
-        "code_L": "List method",
-        "code_M": "Counts at moulting sites",
-        "code_O": "Offshore aerial or boat surveys",
-        "code_P": "Daylight migration counts",
-        "code_R": "Counts at roost sites",
-        "code_S": "Special breeding bird surveys",
-        "code_V": "Vocalisation counts (at night) of breeding birds",
-        "code_W": "Aerial surveys of floodplains",
-        "loading_cache_message": "La production de cette liste peut prendre un certain temps dans un premier temps pour un pays. S'il vous plaît, soyez patient."
+        "loading_cache_message": "La production de cette liste peut prendre un certain temps dans un premier temps pour un pays. S'il vous plaît, soyez patient.",
+        "threats": "Menaces"
     },
     "es": {
         "country": "Paisas",
@@ -682,9 +674,7 @@
         "sitesFilter": "Cualquier término de la tabla",
         "selectAnotherPoint": "Seleccione otro punto",
         "speciesFilter": "Cualquier término de la tabla",
-        "iucn_category": "Category de la Lista Roja",
-        "iucn_category_descr": "Description Category de la Lista Roja",
-        "occurrence_status": "Estado ocorrencia",
+        "threatsFilter": "Cualquier término de la tabla",
         "start": "Inicio",
         "end": "Fin",
         "units": "Unidades",
@@ -733,20 +723,7 @@
         "noDataFound": "Datos no disponibles",
         "noDataFoundAdvancedSearch": "No results found. Please adjust your search criteria and try again. Please be also mindful that we use logical AND condition between different filters and OR condition within the same filter.",
         "legendsTitle": "Leyendas",
-        "code_A": "Aerial surveys of floodplains",
-        "code_C": "Colony counts",
-        "code_D": "Common breeding bird monitoring",
-        "code_G": "Non-breeding goose and swan counts",
-        "code_I": "January waterbird counts",
-        "code_J": "July waterbid counts",
-        "code_L": "List method",
-        "code_M": "Counts at moulting sites",
-        "code_O": "Offshore aerial or boat surveys",
-        "code_P": "Daylight migration counts",
-        "code_R": "Counts at roost sites",
-        "code_S": "Special breeding bird surveys",
-        "code_V": "Vocalisation counts (at night) of breeding birds",
-        "code_W": "Aerial surveys of floodplains",
-        "loading_cache_message": "La producción de esta lista puede llevar algún tiempo por primera vez para un país. Por favor sea paciente.\n"
+        "loading_cache_message": "La producción de esta lista puede llevar algún tiempo por primera vez para un país. Por favor sea paciente.",
+        "threats": "Amenazas"
     }
 }

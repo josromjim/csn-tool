@@ -27,6 +27,7 @@ import SitesDetailPage from 'containers/pages/SitesDetailPage';
 import SitesPage from 'containers/pages/SitesPage';
 import SpeciesDetailPage from 'containers/pages/SpeciesDetailPage';
 import SpeciesPage from 'containers/pages/SpeciesPage';
+import ThreatsPage from 'containers/pages/ThreatsPage';
 import ThersholdLookup from 'containers/pages/ThersholdLookup';
 
 function shouldUpdateScroll(prevRouterProps, { location }) {
@@ -127,6 +128,7 @@ const Routes = ({ history }) => (
         <IndexRoute component={SpeciesPage} onEnter={setSpeciesPage} />
         <Route path=":id(/:cat)(/:population)" component={SpeciesDetailPage} onEnter={updateSpeciesDetailPage} />
       </Route>
+      <Route path="threats" component={ThreatsPage} />
       <Route path="threshold-lookup" component={ThersholdLookup} onEnter={setThresholdPosition} onChange={updateThresholdPosition} />
       <Route path="guidance" component={GuidancePage} />
       <Route path="about" component={AboutPage} />

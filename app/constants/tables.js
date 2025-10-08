@@ -3,6 +3,7 @@ export const TABLES = {
   SITES: 'CITES',
   COUNTRIES: 'COUNTRIES',
   SPECIES: 'SPECIES',
+  THREATS: 'THREATS',
   SEARCH: 'SEARCH'
 };
 
@@ -94,6 +95,16 @@ export const DEFAULT_SPECIES_COLUMNS = {
     'season', 'percentfly', 'current_suitability', 'future_suitability',
     'change_suitability', 'threshold', 'season_ev']
 };
+
+export const ALL_THREATS_COLUMNS = [ 
+  'pop_id', 'threat_id', 'scientific_name', 'population', 
+  'threat_code', 'threat_label', 'description', 'scope', 'severity'
+];
+
+export const DEFAULT_THREATS_COLUMNS = [ 
+  'scientific_name', 'population',
+  'threat_code', 'threat_label', 'description', 'scope', 'severity'
+];
 
 export const ALL_THRESHOLD_COLUMNS = [
   'scientific_name', 'english_name', 'french_name', 'iucn_category',

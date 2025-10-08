@@ -23,6 +23,9 @@ function MainNav(props, context) {
           <span className={isTool ? '-current' : ''}>{context.t('tools')}</span>
           <ul>
             <li>
+              <NavLink to={"/threats"} i18nText="threats" parent />
+            </li>
+            <li>
               <NavLink to={"/threshold-lookup"} i18nText="ramsarCriterionTool" parent />
             </li>
             <li>
