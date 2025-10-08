@@ -27,7 +27,7 @@ async function getThreatsList(req, res) {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           const jsonData = JSON.stringify(results);
-          //await cache.add(cacheKey, jsonData);
+          await cache.add(cacheKey, jsonData);
           res.json(results);
         } else {
           res.status(404);

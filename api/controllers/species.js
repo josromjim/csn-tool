@@ -271,17 +271,17 @@ async function getSpeciesPopulation(req, res) {
 }
 
 async function getSpeciesPopulationThreats(req, res) {
-  //const queryStr = getQueryString(req.query);
-  //const cacheKey = `species/${req.params.id}/populationThreats${queryStr}`;
+  const queryStr = getQueryString(req.query);
+  const cacheKey = `species/${req.params.id}/populationThreats${queryStr}`;
 
   try {
-    // const dataCache = await cache.get(cacheKey);
-    // if (dataCache.status === 'fail') {
-    //   throw new Error(dataCache.error);
-    // }
-    // if (dataCache.status === 'success' && dataCache.value !== null) {
-    //   return res.json(JSON.parse(dataCache.value));
-    // }
+    const dataCache = await cache.get(cacheKey);
+    if (dataCache.status === 'fail') {
+      throw new Error(dataCache.error);
+    }
+    if (dataCache.status === 'success' && dataCache.value !== null) {
+      return res.json(JSON.parse(dataCache.value));
+    }
     const query = `SELECT p.species_main_id AS species_id, p.wpepopid AS pop_id, t.threat_id,
       p.population_name AS population, t.threat_code, t.threat_label,
       t.description, t.scope, t.severity
@@ -289,14 +289,14 @@ async function getSpeciesPopulationThreats(req, res) {
       INNER JOIN populations p on p.wpepopid = t.pop_id
       WHERE p.species_main_id = '${req.params.id}' AND p.wpepopid = ${req.params.populationId} 
         AND t.timing='Ongoing' AND severity NOT IN ('Negligible declines', 'Unknown', 'NA', 'No decline', '')
-      ORDER BY p.threat_code`;
+      ORDER BY t.threat_code`;
 
     runQuery(query)
       .then(async (data) => {
         const results = JSON.parse(data).rows || [];
         if (results && results.length > 0) {
           const jsonData = JSON.stringify(results);
-          //await cache.add(cacheKey, jsonData);
+          await cache.add(cacheKey, jsonData);
           res.json(results);
         } else {
           res.status(404);
