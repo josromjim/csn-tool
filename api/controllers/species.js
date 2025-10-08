@@ -272,7 +272,7 @@ async function getSpeciesPopulation(req, res) {
 
 async function getSpeciesPopulationThreats(req, res) {
   //const queryStr = getQueryString(req.query);
-  //const cacheKey = `species/${req.params.id}/population${queryStr}`;
+  //const cacheKey = `species/${req.params.id}/populationThreats${queryStr}`;
 
   try {
     // const dataCache = await cache.get(cacheKey);
@@ -289,7 +289,7 @@ async function getSpeciesPopulationThreats(req, res) {
       INNER JOIN populations p on p.wpepopid = t.pop_id
       WHERE p.species_main_id = '${req.params.id}' AND p.wpepopid = ${req.params.populationId} 
         AND t.timing='Ongoing' AND severity NOT IN ('Negligible declines', 'Unknown', 'NA', 'No decline', '')
-      ORDER BY p.population_name`;
+      ORDER BY p.threat_code`;
 
     runQuery(query)
       .then(async (data) => {
