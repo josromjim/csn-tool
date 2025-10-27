@@ -15,7 +15,7 @@ function getDetailList(species) {
 function getSelectedSpeciesPopulation(species) {
   if (!species.selectedLASpeciesPopulation) return null;
 
-  const lookAlikeSpecies = species.lookAlikeSpecies && species.lookAlikeSpecies[species.selected];
+  const lookAlikeSpecies = species.selectedCategory != "populationThreats" && species.lookAlikeSpecies && species.lookAlikeSpecies[species.selected];
 
   if(lookAlikeSpecies) {
     return (lookAlikeSpecies || []).find((las) => las.pop_id_origin === parseInt(species.selectedLASpeciesPopulation, 10));
