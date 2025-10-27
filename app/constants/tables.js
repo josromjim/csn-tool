@@ -82,7 +82,7 @@ export const ALL_SPECIES_COLUMNS = {
 export const DEFAULT_SPECIES_COLUMNS = {
   over: ['scientific_name', 'english_name', 'genus', 'family', 'iucn_category', 'aewa_annex_2'],
   population: ['population', 'iucn_category', 'a', 'b', 'c', 'ramsar_criterion'],
-  populationThreats: ['threat_code', 'threat_label', 'description', 'scope', 'severity'],
+  populationThreats: ['threat_code', 'threat_label', 'scope', 'severity'],
   lookAlikeSpecies: ['population', 'original_a', 'original_b', 'original_c', 'confusion_species', 'confusion_species_as'],
   lookAlikeSpeciesPopulation: ['scientific_name', 'english_name', 'population', 'a', 'b', 'c'],
   criticalSites: ['country', 'csn_site_name', 'population', 'season',
@@ -103,7 +103,7 @@ export const ALL_THREATS_COLUMNS = [
 
 export const DEFAULT_THREATS_COLUMNS = [ 
   'scientific_name', 'population',
-  'threat_code', 'threat_label', 'description', 'scope', 'severity'
+  'threat_code', 'threat_label', 'scope', 'severity'
 ];
 
 export const ALL_THRESHOLD_COLUMNS = [
